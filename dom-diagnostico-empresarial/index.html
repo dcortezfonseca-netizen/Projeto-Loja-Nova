@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Método DOM — Diagnóstico Empresarial 360°</title>
+<meta name="description" content="Diagnóstico estratégico de riscos jurídicos, tributários e estruturais para empresas que constroem para durar.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0B0B08; --gold:#B89549; --paper:#F5F1E8; --blue:#102A3A;
+  --gold-dim:rgba(184,149,73,.35); --gold-faint:rgba(184,149,73,.12);
+  --paper-dim:rgba(245,241,232,.65); --paper-faint:rgba(245,241,232,.08);
+  --crit:#8C2F1B; --alto:#B4622A; --medio:#B89549; --baixo:#4A6B5A;
+  --disp:'Marcellus',serif; --body:'Newsreader',serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;border-radius:0!important}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--paper);font-family:var(--body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+::selection{background:var(--gold);color:var(--ink)}
+
+/* ---------- progress hairline ---------- */
+#progressBar{position:fixed;top:0;left:0;height:2px;background:var(--gold);width:0%;z-index:99;transition:width .5s ease}
+#progressMeta{position:fixed;top:10px;right:20px;font-family:var(--disp);font-size:11px;letter-spacing:.22em;color:var(--gold);z-index:99;display:none}
+
+/* ---------- layout ---------- */
+.screen{display:none;min-height:100vh}
+.screen.active{display:block}
+.wrap{max-width:880px;margin:0 auto;padding:0 28px}
+.wrap-wide{max-width:1040px;margin:0 auto;padding:0 28px}
+
+/* ---------- type ---------- */
+h1,h2,h3,.disp{font-family:var(--disp);font-weight:400}
+.eyebrow{font-family:var(--disp);font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+.serif-i{font-style:italic;color:var(--paper-dim)}
+.hairline{border:none;border-top:1px solid var(--gold-dim);margin:0}
+
+/* ---------- cover ---------- */
+#sCover{position:relative;overflow:hidden;display:none}
+#sCover.active{display:flex;align-items:center;justify-content:center;text-align:center}
+.rings{position:absolute;inset:0;pointer-events:none;opacity:.5}
+.rings circle{fill:none;stroke:var(--gold);stroke-opacity:.14;stroke-width:1}
+.cover-inner{position:relative;z-index:2;padding:60px 24px;max-width:760px}
+.cover-mark{font-family:var(--disp);font-size:clamp(64px,12vw,120px);letter-spacing:.28em;color:var(--paper);line-height:1;margin:18px 0 6px;text-indent:.28em}
+.cover-sub{font-family:var(--disp);font-size:13px;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);margin-bottom:34px}
+.cover-thesis{font-size:21px;font-style:italic;color:var(--paper-dim);max-width:520px;margin:0 auto 12px}
+.cover-tag{font-family:var(--disp);font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:44px}
+.cover-cols{display:flex;gap:1px;background:var(--gold-dim);border:1px solid var(--gold-dim);margin:0 auto 44px;max-width:660px}
+.cover-col{flex:1;background:var(--ink);padding:18px 14px}
+.cover-col .n{font-family:var(--disp);font-size:26px;color:var(--gold)}
+.cover-col .l{font-size:13px;color:var(--paper-dim);line-height:1.35;margin-top:4px}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-block;font-family:var(--disp);font-size:13px;letter-spacing:.24em;text-transform:uppercase;padding:17px 44px;border:1px solid var(--gold);color:var(--gold);background:transparent;cursor:pointer;transition:all .25s;text-decoration:none}
+.btn:hover{background:var(--gold);color:var(--ink)}
+.btn-solid{background:var(--gold);color:var(--ink)}
+.btn-solid:hover{background:transparent;color:var(--gold)}
+.btn-ghost{border-color:var(--gold-dim);color:var(--paper-dim);padding:13px 28px;font-size:11px}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);background:transparent}
+.btn[disabled]{opacity:.35;cursor:not-allowed}
+.btn[disabled]:hover{background:transparent;color:var(--gold)}
+.btn:focus-visible,.chip:focus-visible,.q-opt:focus-visible,.find-pillar-head:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+/* ---------- section headers ---------- */
+.sec-head{padding:72px 0 34px}
+.sec-num{font-family:var(--disp);font-size:52px;color:var(--gold);opacity:.28;line-height:1}
+.sec-title{font-size:clamp(26px,4vw,36px);letter-spacing:.06em;margin:8px 0 10px}
+.sec-desc{color:var(--paper-dim);max-width:620px}
+
+/* ---------- forms ---------- */
+.f-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px 30px;margin:30px 0 40px}
+.f-grid .full{grid-column:1/-1}
+@media(max-width:640px){.f-grid{grid-template-columns:1fr}}
+.f-label{font-family:var(--disp);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:9px}
+input[type=text],input[type=email],input[type=tel],input[type=number],select,textarea{width:100%;background:transparent;border:1px solid var(--gold-dim);color:var(--paper);font-family:var(--body);font-size:16px;padding:13px 14px;outline:none;transition:border-color .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--gold)}
+textarea{min-height:200px;resize:vertical;font-size:13.5px;line-height:1.5}
+.cons-price-input{width:130px;padding:8px 10px;font-size:15px;text-align:right}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%23B89549' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+select option{background:var(--ink);color:var(--paper)}
+.choice-row{display:flex;flex-wrap:wrap;gap:10px}
+.chip{border:1px solid var(--gold-dim);padding:10px 18px;cursor:pointer;font-size:15px;color:var(--paper-dim);transition:all .2s;user-select:none}
+.chip:hover{border-color:var(--gold)}
+.chip.sel{border-color:var(--gold);color:var(--gold);background:var(--gold-faint)}
+.f-err{color:var(--alto);font-size:14px;font-style:italic;display:none;margin-top:16px}
+.f-invalid{outline:1px solid var(--crit);outline-offset:3px}
+input.f-invalid,select.f-invalid,textarea.f-invalid{border-color:var(--crit);outline:none}
+
+/* ---------- assessment ---------- */
+.pillar-head{display:flex;align-items:baseline;gap:20px;padding:60px 0 8px}
+.pillar-num{font-family:var(--disp);font-size:58px;color:var(--gold);opacity:.26;line-height:1;min-width:86px}
+.pillar-name{font-size:clamp(22px,3.4vw,30px);letter-spacing:.05em}
+.pillar-sub{color:var(--paper-dim);font-style:italic;font-size:16px;margin:2px 0 26px;padding-left:106px}
+@media(max-width:640px){.pillar-sub{padding-left:0}}
+.p-dots{display:flex;gap:10px;align-items:center;margin:26px 0 8px}
+.p-dot{width:7px;height:7px;border:1px solid var(--gold-dim);background:transparent;transition:all .3s}
+.p-dot.done{background:var(--gold);border-color:var(--gold)}
+.p-dot.cur{border-color:var(--gold);transform:scale(1.5)}
+.q-card{border:1px solid var(--gold-dim);border-left:2px solid var(--gold);padding:30px 32px;margin-bottom:22px;background:var(--paper-faint)}
+.q-num{font-family:var(--disp);font-size:11px;letter-spacing:.24em;color:var(--gold);margin-bottom:12px}
+.q-text{font-size:19px;line-height:1.5;margin-bottom:6px}
+.q-help{font-size:14.5px;font-style:italic;color:var(--paper-dim);margin-bottom:20px}
+.q-opts{display:flex;flex-direction:column;gap:10px}
+.q-opt{border:1px solid var(--gold-dim);padding:14px 18px;cursor:pointer;font-size:15.5px;color:var(--paper-dim);transition:all .18s;position:relative;user-select:none}
+.q-opt:hover{border-color:var(--gold);color:var(--paper)}
+.q-opt.sel{border-color:var(--gold);color:var(--paper);background:var(--gold-faint)}
+.q-opt.sel::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--gold)}
+.nav-row{display:flex;justify-content:space-between;align-items:center;padding:26px 0 80px}
+.save-note{font-size:13px;font-style:italic;color:var(--paper-dim);opacity:.7}
+
+/* ---------- report ---------- */
+#sReport{background:var(--ink)}
+.rep-cover{border-bottom:1px solid var(--gold-dim);padding:70px 0 50px;position:relative}
+.rep-brand{display:flex;justify-content:space-between;align-items:center;margin-bottom:52px}
+.rep-logo{font-family:var(--disp);font-size:30px;letter-spacing:.3em;color:var(--paper)}
+.rep-logo img{max-height:52px;display:block}
+.rep-date{font-family:var(--disp);font-size:11px;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;text-align:right}
+.rep-kicker{font-family:var(--disp);font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.rep-title{font-size:clamp(30px,5vw,46px);letter-spacing:.04em;line-height:1.15;max-width:700px}
+.rep-company{font-size:20px;font-style:italic;color:var(--paper-dim);margin-top:14px}
+.kpi-band{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--gold-dim);border:1px solid var(--gold-dim);margin:46px 0 0}
+@media(max-width:720px){.kpi-band{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:var(--ink);padding:22px 20px}
+.kpi .v{font-family:var(--disp);font-size:32px;color:var(--gold);line-height:1.1}
+.kpi .k{font-family:var(--disp);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--paper-dim);margin-top:6px}
+.rep-sec{padding:64px 0 10px}
+.rep-sec-head{display:flex;align-items:baseline;gap:18px;border-bottom:1px solid var(--gold-dim);padding-bottom:16px;margin-bottom:34px}
+.rep-sec-num{font-family:var(--disp);font-size:15px;letter-spacing:.14em;color:var(--gold)}
+.rep-sec-title{font-size:clamp(21px,3vw,27px);letter-spacing:.05em}
+.score-flex{display:flex;gap:56px;align-items:center;flex-wrap:wrap}
+.gauge-wrap{position:relative;width:280px;height:170px;flex-shrink:0}
+.gauge-val{position:absolute;left:0;right:0;top:96px;text-align:center;font-family:var(--disp);font-size:52px;color:var(--paper)}
+.gauge-lbl{position:absolute;left:0;right:0;top:152px;text-align:center;font-family:var(--disp);font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+.mat-scale{flex:1;min-width:280px}
+.mat-row{display:flex;align-items:center;gap:14px;padding:9px 0;border-bottom:1px solid rgba(184,149,73,.14)}
+.mat-row .rng{font-family:var(--disp);font-size:12px;color:var(--paper-dim);width:66px;letter-spacing:.08em}
+.mat-row .nm{font-family:var(--disp);font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:var(--paper-dim)}
+.mat-row.cur .nm,.mat-row.cur .rng{color:var(--gold)}
+.mat-row.cur{border-bottom-color:var(--gold)}
+.mat-row .marker{margin-left:auto;font-family:var(--disp);font-size:11px;letter-spacing:.2em;color:var(--gold);display:none}
+.mat-row.cur .marker{display:block}
+.verdict{border:1px solid var(--gold-dim);border-left:2px solid var(--gold);padding:26px 30px;margin-top:42px;background:var(--paper-faint)}
+.verdict p{color:var(--paper-dim)}
+.verdict p b{color:var(--paper);font-weight:500}
+.radar-flex{display:flex;gap:50px;align-items:center;flex-wrap:wrap}
+#radar{max-width:420px;width:100%}
+.pillar-bars{flex:1;min-width:300px;display:flex;flex-direction:column;gap:15px}
+.pb-row .pb-top{display:flex;justify-content:space-between;font-family:var(--disp);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--paper-dim);margin-bottom:6px}
+.pb-row .pb-top .pv{color:var(--gold)}
+.pb-track{height:2px;background:rgba(184,149,73,.18)}
+.pb-fill{height:2px;background:var(--gold);width:0;transition:width 1s ease}
+/* risk matrix */
+.riskmap{display:grid;grid-template-columns:34px 1fr;gap:0;max-width:640px;margin:0 auto}
+.rm-ylab{writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;font-family:var(--disp);font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--paper-dim)}
+.rm-grid{display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);border:1px solid var(--gold-dim);aspect-ratio:1.5}
+.rm-cell{border:1px solid rgba(184,149,73,.12);position:relative}
+.rm-xlab{grid-column:2;text-align:center;font-family:var(--disp);font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--paper-dim);padding-top:10px}
+.rm-dot{position:absolute;width:11px;height:11px;background:var(--gold);border:1px solid var(--ink);cursor:default}
+.rm-dot.sev4{background:var(--crit)}
+.rm-dot.sev3{background:var(--alto)}
+.rm-dot.sev2{background:var(--medio)}
+.rm-dot.sev1{background:var(--baixo)}
+.rm-dot .tip{display:none;position:absolute;bottom:16px;left:-8px;background:var(--ink);border:1px solid var(--gold);padding:8px 12px;font-size:12.5px;white-space:nowrap;z-index:5;color:var(--paper)}
+.rm-dot:hover .tip{display:block}
+.rm-legend{display:flex;gap:22px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+.rm-leg{display:flex;align-items:center;gap:8px;font-family:var(--disp);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--paper-dim)}
+.rm-leg i{width:10px;height:10px;display:inline-block}
+/* findings */
+.find-pillar{margin-bottom:8px}
+.find-pillar-head{display:flex;align-items:center;gap:16px;padding:20px 0 14px;cursor:pointer;user-select:none;border-bottom:1px solid rgba(184,149,73,.16)}
+.fp-num{font-family:var(--disp);font-size:26px;color:var(--gold);opacity:.4;min-width:44px}
+.fp-name{font-family:var(--disp);font-size:16px;letter-spacing:.12em;text-transform:uppercase}
+.fp-meta{margin-left:auto;display:flex;align-items:center;gap:16px}
+.fp-count{font-size:13px;font-style:italic;color:var(--paper-dim)}
+.fp-score{font-family:var(--disp);font-size:15px;color:var(--gold)}
+.fp-chev{color:var(--gold);transition:transform .3s;font-size:12px}
+.find-pillar.open .fp-chev{transform:rotate(90deg)}
+.find-body{display:none;padding:10px 0 26px}
+.find-pillar.open .find-body{display:block}
+.finding{border:1px solid var(--gold-dim);margin:16px 0;background:var(--paper-faint)}
+.finding.sev4{border-left:3px solid var(--crit)}
+.finding.sev3{border-left:3px solid var(--alto)}
+.finding.sev2{border-left:3px solid var(--medio)}
+.finding.sev1{border-left:3px solid var(--baixo)}
+.find-head{padding:20px 26px 14px;display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.find-title{font-family:var(--disp);font-size:18px;letter-spacing:.03em;flex:1;min-width:200px}
+.sev-chip{font-family:var(--disp);font-size:10px;letter-spacing:.22em;text-transform:uppercase;padding:5px 12px;border:1px solid}
+.sev-chip.s4{color:#D98873;border-color:var(--crit)}
+.sev-chip.s3{color:#D9A273;border-color:var(--alto)}
+.sev-chip.s2{color:var(--gold);border-color:var(--gold)}
+.sev-chip.s1{color:#8FB3A0;border-color:var(--baixo)}
+.find-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid rgba(184,149,73,.16)}
+@media(max-width:680px){.find-grid{grid-template-columns:1fr}}
+.find-cell{padding:16px 26px;border-bottom:1px solid rgba(184,149,73,.12)}
+.find-cell:nth-child(odd){border-right:1px solid rgba(184,149,73,.12)}
+@media(max-width:680px){.find-cell:nth-child(odd){border-right:none}}
+.find-cell .lb{font-family:var(--disp);font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.find-cell .tx{font-size:14.5px;color:var(--paper-dim);line-height:1.55}
+.find-cell .tx b{color:var(--paper);font-weight:500}
+.find-full{grid-column:1/-1;border-right:none!important}
+/* opportunities */
+.opp{border:1px solid var(--gold);padding:26px 30px;margin:18px 0;position:relative;background:linear-gradient(to right,var(--gold-faint),transparent)}
+.opp-title{font-family:var(--disp);font-size:18px;margin-bottom:8px;color:var(--gold)}
+.opp-desc{font-size:15px;color:var(--paper-dim);margin-bottom:12px}
+.opp-val{font-family:var(--disp);font-size:22px;color:var(--paper)}
+.opp-note{font-size:12.5px;font-style:italic;color:var(--paper-dim);margin-top:6px}
+/* plan */
+.plan-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--gold-dim);border:1px solid var(--gold-dim)}
+@media(max-width:760px){.plan-cols{grid-template-columns:1fr}}
+.plan-col{background:var(--ink);padding:26px 24px}
+.plan-col h3{font-size:15px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.plan-col .ph{font-size:13px;font-style:italic;color:var(--paper-dim);margin-bottom:18px}
+.plan-item{padding:11px 0;border-top:1px solid rgba(184,149,73,.14);font-size:14.5px;color:var(--paper-dim);line-height:1.45}
+.plan-item b{color:var(--paper);font-weight:500}
+/* projection */
+.proj-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--gold-dim);border:1px solid var(--gold-dim)}
+@media(max-width:720px){.proj-grid{grid-template-columns:repeat(2,1fr)}}
+.proj-cell{background:var(--ink);padding:22px 20px}
+.proj-cell .y{font-family:var(--disp);font-size:12px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase}
+.proj-cell .s{font-family:var(--disp);font-size:30px;color:var(--paper);margin:8px 0 4px}
+.proj-cell .d{font-size:13px;color:var(--paper-dim);line-height:1.4}
+/* methodology / cta */
+.meth{color:var(--paper-dim);font-size:14.5px;line-height:1.7}
+.meth b{color:var(--paper);font-weight:500}
+.disclaimer{border:1px solid var(--gold-dim);padding:20px 26px;margin-top:26px;font-size:13.5px;font-style:italic;color:var(--paper-dim)}
+.cta-band{border:1px solid var(--gold);padding:52px 40px;margin:70px 0 40px;text-align:center;background:linear-gradient(160deg,var(--gold-faint),transparent 55%)}
+.cta-band h2{font-size:clamp(24px,3.6vw,32px);letter-spacing:.05em;margin-bottom:12px}
+.cta-band p{color:var(--paper-dim);max-width:560px;margin:0 auto 30px}
+.cta-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.rep-footer{border-top:1px solid var(--gold-dim);padding:34px 0 60px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+.rep-footer .f1{font-family:var(--disp);font-size:13px;letter-spacing:.26em;color:var(--gold)}
+.rep-footer .f2{font-size:13px;font-style:italic;color:var(--paper-dim)}
+/* consultor */
+.cons-band{border:2px solid var(--blue);outline:1px solid var(--gold);margin:70px 0;padding:0;background:var(--blue)}
+.cons-head{padding:26px 34px;border-bottom:1px solid var(--gold-dim);display:flex;align-items:center;gap:16px}
+.cons-head .tag{font-family:var(--disp);font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:5px 12px}
+.cons-head h2{font-size:21px;letter-spacing:.06em}
+.cons-body{padding:30px 34px 40px}
+.cons-tbl{width:100%;border-collapse:collapse;margin:14px 0 30px}
+.cons-tbl th{font-family:var(--disp);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);text-align:left;padding:10px 12px;border-bottom:1px solid var(--gold-dim)}
+.cons-tbl td{font-size:14.5px;color:var(--paper-dim);padding:11px 12px;border-bottom:1px solid rgba(184,149,73,.14);vertical-align:top}
+.cons-tbl td b{color:var(--paper);font-weight:500}
+.cons-sub{font-family:var(--disp);font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:28px 0 10px}
+.toolbar{position:fixed;bottom:0;left:0;right:0;background:rgba(11,11,8,.96);border-top:1px solid var(--gold-dim);padding:13px 24px;display:none;z-index:98;backdrop-filter:blur(6px)}
+.toolbar.show{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
+@media screen and (max-width:640px){ .rep-footer{padding-bottom:130px} }
+
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *{transition-duration:.01ms!important;animation-duration:.01ms!important;scroll-behavior:auto!important}
+}
+
+/* ---------- print ---------- */
+@media print{
+  @page{margin:14mm 12mm;size:A4}
+  body{background:#fff;color:#1a1a16;font-size:11.5pt}
+  :root{--paper:#1a1a16;--paper-dim:#4a463c;--paper-faint:rgba(184,149,73,.05);--ink:#fff;--gold:#96793B;--gold-dim:rgba(150,121,59,.45);--gold-faint:rgba(150,121,59,.07)}
+  #progressBar,#progressMeta,.toolbar,.no-print{display:none!important}
+  .screen{display:none!important}
+  #sReport{display:block!important}
+  .kpi,.plan-col,.proj-cell,.cover-col{background:#fff}
+  .q-card,.finding,.verdict{background:rgba(150,121,59,.04)}
+  .find-pillar .find-body{display:block!important}
+  .rep-sec{padding:34px 0 6px;break-inside:avoid-page}
+  .finding{break-inside:avoid}
+  .plan-cols,.proj-grid,.kpi-band{background:var(--gold-dim)}
+  .cons-band{background:#eef1f3;border-color:#102A3A}
+  .cons-band,.cons-tbl td,.cons-tbl th{color:#1a1a16}
+  a{color:inherit;text-decoration:none}
+  .rm-dot .tip{display:none!important}
+  .gauge-val{color:#1a1a16}
+}
+</style>
+</head>
+<body>
+
+<div id="progressBar"></div>
+<div id="progressMeta"></div>
+
+<!-- ============ CAPA ============ -->
+<section class="screen active" id="sCover">
+  <svg class="rings" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1200 800">
+    <circle cx="600" cy="400" r="120"/><circle cx="600" cy="400" r="210"/><circle cx="600" cy="400" r="310"/><circle cx="600" cy="400" r="420"/><circle cx="600" cy="400" r="540"/><circle cx="600" cy="400" r="670"/>
+  </svg>
+  <div class="cover-inner">
+    <div class="eyebrow">Diagnóstico Empresarial 360°</div>
+    <div class="cover-mark">DOM</div>
+    <div class="cover-sub">Diagnosticar · Organizar · Maturidade</div>
+    <p class="cover-thesis">“CPFs passam. CNPJs, se bem estruturados, se perpetuam.”</p>
+    <div class="cover-tag">Para quem constrói para durar</div>
+    <div class="cover-cols">
+      <div class="cover-col"><div class="n">7</div><div class="l">pilares de análise estruturada</div></div>
+      <div class="cover-col"><div class="n">360°</div><div class="l">visão jurídica, tributária e patrimonial</div></div>
+      <div class="cover-col"><div class="n">30–40</div><div class="l">minutos, com progresso salvo</div></div>
+    </div>
+    <button class="btn btn-solid" onclick="DOM_APP.start()">Iniciar o diagnóstico</button>
+    <p style="margin-top:26px;font-size:13px;font-style:italic;color:var(--paper-dim)">Suas respostas são tratadas com confidencialidade, nos termos da LGPD.</p>
+  </div>
+</section>
+
+<!-- ============ PERFIL ============ -->
+<section class="screen" id="sProfile">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">01</div>
+      <h1 class="sec-title">Perfil da empresa</h1>
+      <p class="sec-desc">Estas informações calibram o diagnóstico: os módulos e a profundidade das perguntas se ajustam automaticamente à realidade da sua operação.</p>
+    </div>
+    <div class="f-grid" id="profileForm"></div>
+    <p class="f-err" id="profileErr">Preencha os campos destacados para continuar.</p>
+    <div class="nav-row">
+      <span class="save-note">Nada é enviado nesta etapa.</span>
+      <button class="btn" onclick="DOM_APP.submitProfile()">Avançar para a análise</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ASSESSMENT ============ -->
+<section class="screen" id="sAssess">
+  <div class="wrap">
+    <div id="assessBody"></div>
+    <div class="nav-row">
+      <button class="btn btn-ghost" id="btnPrev" onclick="DOM_APP.prevPillar()">← Anterior</button>
+      <span class="save-note">Progresso salvo automaticamente neste dispositivo.</span>
+      <button class="btn" id="btnNext" onclick="DOM_APP.nextPillar()">Próximo pilar</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PAINEL DO CONSULTOR (importação) ============ -->
+<section class="screen" id="sConsultorImport">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">•</div>
+      <h1 class="sec-title">Painel do consultor</h1>
+      <p class="sec-desc">Cole abaixo o conteúdo da coluna "JSON completo" da planilha de respostas (ou o JSON recebido por e-mail) para reconstruir o diagnóstico deste cliente, com a leitura comercial e a proposta por pilar.</p>
+    </div>
+    <div class="f-grid">
+      <div class="full">
+        <label class="f-label">JSON completo do cliente</label>
+        <textarea id="importJson" placeholder='{"profile":{...},"answers":{...}}'></textarea>
+      </div>
+    </div>
+    <p class="f-err" id="importErr">Não foi possível ler esses dados — confira se colou o JSON completo, sem cortes.</p>
+    <div class="nav-row">
+      <span class="save-note">Nada é enviado — o diagnóstico é montado neste navegador.</span>
+      <button class="btn" onclick="DOM_APP.importDiagnostico()">Carregar diagnóstico</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RELATÓRIO ============ -->
+<section class="screen" id="sReport">
+  <div class="wrap-wide" id="reportBody"></div>
+</section>
+
+<div class="toolbar" id="toolbar">
+  <button class="btn btn-ghost no-print" onclick="window.print()">Exportar relatório em PDF</button>
+  <button class="btn btn-ghost no-print" id="btnSend" onclick="DOM_APP.sendData()">Enviar diagnóstico ao consultor</button>
+  <button class="btn btn-ghost no-print" onclick="DOM_APP.reset()">Reiniciar</button>
+</div>
+
+<script>
+'use strict';
+/* ================================================================
+   CONFIGURAÇÃO — edite apenas este bloco
+   ================================================================ */
+const CONFIG = {
+  logoUrl: '',                                   // URL da logomarca (deixe vazio para usar o wordmark DOM)
+  whatsapp: '5537988043934',                     // WhatsApp direto do Daniel — DDI 55 + DDD 37 + número
+  consultantEmail: 'contato@cortezfonseca.adv.br',
+  webhookUrl: 'https://script.google.com/macros/s/AKfycbwYiqTKf9wA15g3y6tfiRluA9xYBNU0KcNx1uilVBptaVJhrf_VjFW4nZqIx-AaBEV5rg/exec',
+  consultantName: 'Cortez Fonseca Advogados — Método DOM',
+  reportValidity: '30 dias'
+};
+/* ================================================================
+   PERFIL — campos que calibram a jornada adaptativa
+   ================================================================ */
+const PROFILE_FIELDS = [
+  {id:'nome', label:'Seu nome', type:'text', req:true},
+  {id:'empresa', label:'Nome da empresa', type:'text', req:true},
+  {id:'email', label:'E-mail', type:'email', req:true},
+  {id:'fone', label:'WhatsApp', type:'tel', req:true},
+  {id:'cidade', label:'Cidade / UF', type:'text', req:false},
+  {id:'tempo', label:'Tempo de empresa', type:'select', req:true, opts:[['lt2','Menos de 2 anos'],['2a5','2 a 5 anos'],['5a10','5 a 10 anos'],['gt10','Mais de 10 anos']]},
+  {id:'setor', label:'Setor principal', type:'select', req:true, full:true, opts:[
+    ['comercio','Comércio / varejo'],['industria','Indústria'],['servicos','Serviços profissionais'],
+    ['saude','Saúde (clínica, consultório, farmácia)'],['alimentacao','Alimentação (restaurante, bar, food service)'],
+    ['construcao','Construção civil / engenharia'],['tecnologia','Tecnologia / digital'],
+    ['transporte','Transporte / logística'],['agro','Agronegócio'],['educacao','Educação'],['outro','Outro']]},
+  {id:'regime', label:'Regime tributário', type:'select', req:true, opts:[
+    ['simples','Simples Nacional'],['presumido','Lucro Presumido'],['real','Lucro Real'],['mei','MEI'],['ns','Não sei informar']]},
+  {id:'fat', label:'Faturamento anual aproximado', type:'select', req:true, opts:[
+    ['a','Até R$ 360 mil'],['b','R$ 360 mil a R$ 1,2 milhão'],['c','R$ 1,2 mi a R$ 4,8 milhões'],
+    ['d','R$ 4,8 mi a R$ 20 milhões'],['e','Acima de R$ 20 milhões']]},
+  {id:'emp', label:'Funcionários registrados (CLT)', type:'select', req:true, opts:[
+    ['0','Nenhum'],['1','1 a 5'],['2','6 a 20'],['3','21 a 50'],['4','Mais de 50']]},
+  {id:'socios', label:'Número de sócios', type:'select', req:true, opts:[['1','Sócio único'],['2','2 sócios'],['3','3 ou mais']]},
+  {id:'patrimonio', label:'A empresa ou os sócios possuem patrimônio relevante (imóveis, frota, participações)?', type:'chips', req:true, full:true, opts:[['s','Sim'],['n','Não']]},
+  {id:'b2c', label:'Vende diretamente ao consumidor final?', type:'chips', req:true, opts:[['s','Sim'],['n','Não']]},
+  {id:'dados', label:'Coleta dados de clientes em escala (cadastros, marketing, app, site)?', type:'chips', req:true, opts:[['s','Sim'],['n','Não']]}
+];
+
+/* valores usados pelo motor de exposição financeira */
+const REV_MID = {a:250000, b:750000, c:3000000, d:12000000, e:30000000};
+const EMP_MID = {0:0, 1:3, 2:12, 3:35, 4:75};
+
+/* ================================================================
+   PILARES
+   ================================================================ */
+const PILLARS = [
+  {id:1, name:'Trabalhista & Segurança do Trabalho', sub:'A Justiça do Trabalho projeta mais de 5 milhões de novas ações por ano. A falta de documentação é o principal motivo de derrota das empresas.', weight:22},
+  {id:2, name:'Tributário & Fiscal', sub:'2026 é o ano-teste da reforma tributária (LC 214/2025). Erros de enquadramento custam caro — e a janela de recuperação dos últimos 5 anos está se fechando.', weight:22},
+  {id:3, name:'Societário & Sucessório', sub:'Seis em cada dez empresas fecham em até cinco anos. A ausência de regras entre sócios e de planejamento sucessório está entre as causas centrais.', weight:16},
+  {id:4, name:'Contratos & Relações Cíveis', sub:'Sem contrato escrito e cláusulas essenciais, cada operação comercial é uma exposição em aberto.', weight:14},
+  {id:5, name:'LGPD & Proteção de Dados', sub:'A ANPD tornou-se agência reguladora e fiscaliza por setor. Porte não isenta: a primeira multa foi aplicada a uma microempresa.', weight:10},
+  {id:6, name:'Financeiro & Patrimonial', sub:'O empresário enxerga o mundo pelos números — mas muitas empresas não conhecem a própria margem nem projetam o próprio caixa.', weight:10},
+  {id:7, name:'Governança & Documentação', sub:'Processos na cabeça do dono, licenças vencidas e decisões sem registro são passivos silenciosos.', weight:6}
+];
+
+/* ================================================================
+   PERGUNTAS — motor adaptativo
+   sev: 1 baixo · 2 médio · 3 alto · 4 crítico | prob: 1–5
+   exp: ['emp',min,max porFuncionário] | ['rev',%min,%max] | ['fix',min,max]
+   ================================================================ */
+const hasEmp = p => +p.emp > 0;
+const QUESTIONS = [
+
+/* ---------- PILAR 1 — TRABALHISTA ---------- */
+{id:'t01', p:1, w:3, showIf:hasEmp,
+ t:'Como é feito o registro da jornada de trabalho dos funcionários?',
+ h:'Sem registro válido, prevalece a jornada que o empregado alegar em juízo.',
+ opts:[['Ponto eletrônico ou sistema com marcações reais',100],['Folha/planilha assinada, com horários variáveis reais',60],['Registro com horários sempre idênticos ("ponto britânico") ou sem registro',0]],
+ f:{sev:4, prob:4, title:'Controle de jornada frágil ou inexistente', base:'CLT, art. 74, §2º; Súmula 338 do TST',
+    desc:'Sem registro fiel de jornada, o ônus da prova se inverte: em ação trabalhista, presume-se verdadeira a jornada alegada pelo empregado — horas extras, intervalos e reflexos de todo o período não prescrito.',
+    sol:'Implantar registro eletrônico ou manual válido, com marcações reais e tolerâncias legais, e arquivar os espelhos de ponto por pelo menos 5 anos.', prazo:30, exp:['emp',2000,8000]}},
+
+{id:'t02', p:1, w:3, showIf:hasEmp,
+ t:'Como a empresa trata horas extras?',
+ h:'Horas extras lideram o ranking de condenações na Justiça do Trabalho.',
+ opts:[['São raras e sempre pagas com adicional ou compensadas formalmente',100],['Acontecem com frequência e são compensadas de modo informal',30],['Não há controle sobre horas além da jornada',0]],
+ f:{sev:4, prob:4, title:'Horas extras sem lastro documental', base:'CLT, arts. 59 a 61; jurisprudência dominante do TST',
+    desc:'Compensação informal não tem validade jurídica. Todo o excedente pode ser cobrado como hora extra com adicional de no mínimo 50%, mais reflexos em férias, 13º, FGTS e INSS, dos últimos 5 anos.',
+    sol:'Auditar 12 meses de jornada × folha; formalizar regime de compensação válido ou pagar o excedente corretamente daqui em diante.', prazo:60, exp:['emp',1500,6000]}},
+
+{id:'t03', p:1, w:2, showIf:hasEmp,
+ t:'A empresa usa banco de horas? Em que condições?',
+ h:'É a troca de hora extra por folga combinada previamente; sem regras claras, vira dívida trabalhista.',
+ opts:[['Sim, com acordo escrito e compensação dentro do prazo legal',100],['Não usamos banco de horas',85],['Sim, mas de forma verbal/informal ou sem controle de prazo',0]],
+ f:{sev:3, prob:4, title:'Banco de horas irregular', base:'CLT, art. 59, §§2º, 5º e 6º',
+    desc:'Banco de horas por acordo individual escrito exige compensação em até 6 meses (12 meses se previsto em norma coletiva). Sem acordo escrito ou fora do prazo, o saldo converte-se automaticamente em horas extras com adicional.',
+    sol:'Formalizar acordo escrito de banco de horas, com extrato mensal entregue ao funcionário e trava de compensação no prazo legal.', prazo:30, exp:['emp',800,3000]}},
+
+{id:'t04', p:1, w:3, showIf:hasEmp,
+ t:'A empresa conhece e aplica a Convenção Coletiva de Trabalho (CCT) da categoria?',
+ h:'Pisos salariais, reajustes, benefícios obrigatórios e regras de jornada nascem na CCT — não na CLT.',
+ opts:[['Sim, conferimos a CCT vigente todo ano e aplicamos as cláusulas',100],['Sabemos qual é, mas não conferimos as cláusulas regularmente',40],['Não sabemos qual convenção se aplica',0]],
+ f:{sev:3, prob:4, title:'Convenção coletiva não conferida', base:'CLT, arts. 611-A e 611-B; Portaria MTE 3.665/2023 (trabalho em feriados)',
+    desc:'Descumprir piso, reajuste ou benefício previsto em CCT gera diferenças salariais em cadeia (reflexos em todas as verbas) e multas convencionais. Desde a Portaria 3.665/23, trabalho em feriados no comércio exige previsão em CCT — acordo individual não basta.',
+    sol:'Conferência anual da CCT com checklist de cláusulas econômicas e de jornada; ajuste imediato de pisos e benefícios em desacordo.', prazo:30, exp:['emp',1000,4000]}},
+
+{id:'t05', p:1, w:2, showIf:hasEmp,
+ t:'Como são os contratos de trabalho da equipe?',
+ h:'O contrato de trabalho vai além da carteira assinada: ele define regras específicas da função e protege segredos do negócio.',
+ opts:[['Personalizados por função, com cláusulas de confidencialidade e específicas da operação',100],['Modelo genérico igual para todos',45],['Não há contrato escrito além do registro na carteira',10]],
+ f:{sev:2, prob:3, title:'Contratos de trabalho genéricos ou inexistentes', base:'CLT, arts. 442 e seguintes; arts. 75-A e seguintes (teletrabalho)',
+    desc:'Contrato genérico não protege segredo de negócio, não regula teletrabalho, uso de imagem, equipamentos e variáveis de remuneração — lacunas que viram teses contra a empresa em juízo.',
+    sol:'Redigir contratos por função (comercial, operacional, administrativo), com cláusulas de confidencialidade, teletrabalho e políticas anexas.', prazo:60, exp:['emp',500,2000]}},
+
+{id:'t06', p:1, w:2, showIf:hasEmp,
+ t:'O dossiê de admissão dos funcionários está completo?',
+ h:'Exame admissional (ASO), contrato assinado, ficha de registro, termos de LGPD e entrega de equipamentos.',
+ opts:[['Sim, checklist completo arquivado para todos',100],['Parcial — alguns documentos faltam em algumas pastas',40],['Não há padrão de admissão documentada',0]],
+ f:{sev:2, prob:3, title:'Documentação admissional incompleta', base:'CLT, art. 41; NR-7 (ASO admissional)',
+    desc:'Admissão sem ASO e sem dossiê documentado fragiliza a defesa em praticamente qualquer ação e gera autuação em fiscalização. O eSocial cruza admissões com eventos de saúde ocupacional automaticamente.',
+    sol:'Implantar dossiê admissional padrão (checklist de 12 itens) e regularizar retroativamente as pastas dos atuais funcionários.', prazo:30, exp:['emp',300,1200]}},
+
+{id:'t07', p:1, w:3, showIf:hasEmp,
+ t:'A empresa possui PGR e PCMSO vigentes e atualizados?',
+ h:'Programa de Gerenciamento de Riscos e Programa de Controle Médico de Saúde Ocupacional — a base documental de SST.',
+ opts:[['Sim, vigentes, com ASOs periódicos em dia',100],['Existem, mas estão vencidos ou desatualizados',30],['Não temos ou não sei o que é',0]],
+ f:{sev:4, prob:4, title:'Gestão de SST inexistente ou vencida (PGR/PCMSO)', base:'NR-1 e NR-7; eventos S-2210/S-2220/S-2240 do eSocial',
+    desc:'O eSocial cruza dados em tempo real: PGR ou PCMSO vencidos geram inconsistência detectável e autuação. Sem esses documentos, qualquer acidente ou doença ocupacional presume culpa da empresa — inclusive para ações regressivas do INSS.',
+    sol:'Contratar assessoria de SST para emitir/renovar PGR, PCMSO e ASOs periódicos; integrar os eventos ao eSocial.', prazo:30, exp:['emp',1000,5000]}},
+
+{id:'t08', p:1, w:3, showIf:hasEmp,
+ t:'Os riscos psicossociais (estresse, assédio, sobrecarga, metas abusivas) já foram avaliados e incluídos no PGR, como exige a nova NR-1?',
+ h:'A fiscalização com autuação começou em 26/05/2026 — sem exceção por porte de empresa.',
+ opts:[['Sim, avaliação feita e incluída no inventário de riscos',100],['Estamos em processo de adequação',50],['Não fizemos / não sabia dessa exigência',0]],
+ f:{sev:4, prob:5, title:'Riscos psicossociais fora do PGR (nova NR-1)', base:'NR-1; Portaria MTE 1.419/2024 — autuação desde 26/05/2026',
+    desc:'Desde maio de 2026 a Inspeção do Trabalho autua empresas cujo PGR não contempla fatores psicossociais. Não há exceção por porte. Além da multa, a omissão é usada pelo MPT e em ações de dano moral como prova de negligência.',
+    sol:'Realizar avaliação de riscos psicossociais (instrumento validado), incluir no inventário do PGR e implantar medidas de controle com registro.', prazo:30, exp:['fix',5000,40000]}},
+
+{id:'t09', p:1, w:2, showIf:hasEmp,
+ t:'Os exames periódicos e demissionais (ASO) são feitos nos prazos?',
+ h:'ASO é o exame médico que atesta a aptidão do funcionário para o trabalho, exigido em datas específicas.',
+ opts:[['Sim, com controle de vencimento',100],['Fazemos, mas sem controle rígido de prazos',45],['Só o admissional, quando fazemos',0]],
+ f:{sev:2, prob:3, title:'ASOs periódicos e demissionais em atraso', base:'NR-7; CLT, art. 168',
+    desc:'Demissão sem ASO demissional pode invalidar o desligamento em juízo e caracterizar dispensa de empregado possivelmente inapto — com reintegração e indenização.',
+    sol:'Calendário de exames com alerta de vencimento vinculado ao PCMSO.', prazo:30, exp:['emp',200,1000]}},
+
+{id:'t10', p:1, w:2, showIf:hasEmp,
+ t:'As rescisões seguem um protocolo formal (cálculo conferido, prazo de 10 dias, termos assinados)?',
+ h:'O prazo legal para pagar as verbas rescisórias é de 10 dias corridos após o desligamento; atraso gera multa automática.',
+ opts:[['Sim, com conferência de cálculo e documentação completa',100],['O contador cuida, sem conferência da empresa',55],['Já atrasamos pagamento ou não há padrão',0]],
+ f:{sev:3, prob:3, title:'Rescisões sem protocolo seguro', base:'CLT, art. 477, §§6º e 8º; art. 482 (justa causa)',
+    desc:'Atraso no pagamento rescisório gera multa de um salário por funcionário, automática. Justa causa mal instruída (sem dossiê disciplinar) é revertida em juízo com todas as verbas da dispensa imotivada.',
+    sol:'Protocolo de desligamento com checklist, dupla conferência de cálculo e dossiê disciplinar prévio para justas causas.', prazo:30, exp:['emp',400,2000]}},
+
+{id:'t11', p:1, w:3,
+ t:'A empresa contrata pessoas como PJ ou autônomos que trabalham com rotina, horário e subordinação típicos de empregado?',
+ h:'A chamada "pejotização" é o passivo oculto mais caro: o vínculo é reconhecido retroativamente.',
+ opts:[['Não contratamos PJ/autônomos, ou apenas com autonomia real',100],['Temos PJs, com autonomia parcial — zona cinzenta',35],['Temos PJs que cumprem horário e recebem ordens como empregados',0]],
+ f:{sev:4, prob:4, title:'Pejotização — risco de reconhecimento de vínculo', base:'CLT, art. 3º; jurisprudência do STF sobre licitude da terceirização × fraude na contratação',
+    desc:'Presentes pessoalidade, habitualidade, onerosidade e subordinação, o vínculo é reconhecido de todo o período: salários, férias, 13º, FGTS + 40%, INSS patronal e multas — além de autuação previdenciária.',
+    sol:'Mapear cada PJ/autônomo pelo teste dos 4 requisitos; reestruturar como contrato civil verdadeiro (com autonomia real) ou registrar como CLT.', prazo:60, exp:['fix',40000,250000]}},
+
+{id:'t12', p:1, w:2, showIf:hasEmp,
+ t:'Se a empresa usa serviços terceirizados (limpeza, segurança, logística), fiscaliza o recolhimento de INSS e FGTS da prestadora?',
+ h:'Se a empresa terceirizada não pagar os direitos dos próprios funcionários, sua empresa pode ter que pagar no lugar dela.',
+ opts:[['Não usamos terceirização de mão de obra',90],['Usamos e exigimos comprovantes mensais',100],['Usamos, mas nunca conferimos os recolhimentos',0]],
+ f:{sev:3, prob:3, title:'Terceirização sem gestão de compliance', base:'Lei 6.019/1974; responsabilidade subsidiária consolidada na jurisprudência',
+    desc:'Se a prestadora não recolher encargos, a tomadora responde subsidiariamente pelos débitos trabalhistas dos terceirizados que lhe prestaram serviço.',
+    sol:'Rotina mensal de conferência: certidões, guias de FGTS/INSS e folha dos terceirizados alocados, como condição de pagamento.', prazo:30, exp:['fix',10000,80000]}},
+
+{id:'t13', p:1, w:2, showIf:p=>hasEmp(p)&&['industria','saude','construcao','agro','alimentacao','transporte'].includes(p.setor),
+ t:'Adicionais de insalubridade/periculosidade foram avaliados por laudo técnico (LTCAT/laudo de insalubridade)?',
+ h:'Funções expostas a agentes nocivos (ruído, calor, produtos químicos) podem gerar direito a um adicional no salário — só um laudo técnico confirma.',
+ opts:[['Sim, laudos emitidos e adicionais pagos quando devidos',100],['Nunca avaliamos tecnicamente',0],['Avaliado há muito tempo, sem atualização',35]],
+ f:{sev:3, prob:4, title:'Insalubridade/periculosidade sem laudo', base:'CLT, arts. 189 a 197; NR-15 e NR-16; Decreto 3.048/91, Anexo IV (LTCAT)',
+    desc:'Setores expostos a agentes nocivos sem laudo acumulam passivo de adicionais (10–40% do salário-base) de até 5 anos, mais aposentadoria especial não financiada — cobrada da empresa em ação regressiva.',
+    sol:'Emitir LTCAT e laudos de insalubridade/periculosidade; pagar adicionais devidos ou neutralizar o agente com EPI/EPC documentado.', prazo:60, exp:['emp',1500,7000]}},
+
+{id:'t14', p:1, w:1, showIf:p=>hasEmp(p)&&(p.b2c==='s'||['comercio','alimentacao','saude'].includes(p.setor)),
+ t:'O trabalho em domingos e feriados está amparado por previsão na convenção coletiva?',
+ h:'Funcionar em feriados sem previsão na convenção coletiva pode gerar pagamento em dobro e multa.',
+ opts:[['Sim, conferimos a CCT e cumprimos as contrapartidas',100],['Funcionamos em feriados sem verificar a CCT',0],['Não funcionamos em domingos/feriados',90]],
+ f:{sev:2, prob:3, title:'Trabalho em feriados sem amparo em CCT', base:'Portaria MTE 3.665/2023; Lei 10.101/2000',
+    desc:'Desde 2024, o trabalho em feriados no comércio exige autorização em convenção coletiva. Sem ela: pagamento em dobro, multa administrativa e autuação.',
+    sol:'Verificar cláusula de feriados na CCT vigente e formalizar as contrapartidas (folga compensatória/adicional).', prazo:30, exp:['emp',300,1200]}},
+
+/* ---------- PILAR 2 — TRIBUTÁRIO ---------- */
+{id:'x01', p:2, w:3,
+ t:'A empresa fez um estudo comparativo de regime tributário (Simples × Presumido × Real) nos últimos 2 anos?',
+ h:'O enquadramento errado é a forma mais silenciosa de perder dinheiro todos os meses.',
+ opts:[['Sim, estudo técnico recente orientou o enquadramento atual',100],['O contador definiu há anos e nunca revisamos',30],['Nunca foi feito estudo comparativo',0]],
+ f:{sev:3, prob:4, title:'Enquadramento tributário sem revisão técnica', base:'LC 123/2006; legislação do IRPJ/CSLL (Presumido × Real)',
+    desc:'Margens, folha e mix de produtos mudam — e o regime ideal muda junto. Empresas no regime errado pagam tipicamente 15% a 30% a mais de tributo, todos os meses, sem perceber.',
+    sol:'Estudo comparativo anual com projeção nos 3 regimes, decidido antes de janeiro (a opção é irretratável no ano-calendário).', prazo:60, exp:['rev',1.5,4]}},
+
+{id:'x02', p:2, w:3, showIf:p=>p.regime==='simples'&&['servicos','saude','tecnologia','educacao','construcao','outro'].includes(p.setor),
+ t:'A empresa monitora mensalmente o Fator R (folha ÷ receita ≥ 28%)?',
+ h:'Ele define se sua atividade de serviços é tributada pelo Anexo III (a partir de 6%) ou pelo Anexo V (a partir de 15,5%).',
+ opts:[['Sim, gestão mensal ativa do Fator R',100],['Já ouvi falar, mas não monitoramos',20],['Não sei o que é Fator R',0]],
+ f:{sev:3, prob:4, title:'Fator R sem gestão — alíquota até 9,5 p.p. maior', base:'LC 123/2006, art. 18, §5º-J e §24',
+    desc:'Com folha ≥ 28% da receita, a empresa de serviços migra do Anexo V para o Anexo III do Simples. A diferença chega a 9,5 pontos percentuais sobre TODO o faturamento. Muitas empresas pagam Anexo V por pura falta de gestão do indicador.',
+    sol:'Planilha mensal de Fator R; quando próximo do corte, avaliar ajuste lícito de pró-labore/folha. Revisar também os últimos 5 anos: recolhimentos a maior são recuperáveis.', prazo:30, exp:['rev',2,6]}},
+
+{id:'x03', p:2, w:2, showIf:p=>p.regime==='simples'&&['c','d','e'].includes(p.fat),
+ t:'A empresa acompanha a proximidade do sublimite (R$ 3,6 mi) e do teto (R$ 4,8 mi) do Simples Nacional?',
+ h:'Passar de R$ 3,6 milhões ou R$ 4,8 milhões de faturamento no ano muda a forma de recolher impostos — e pode tirar a empresa do Simples Nacional.',
+ opts:[['Sim, com projeção de faturamento acumulado e plano de transição',100],['Sabemos que existe, sem acompanhamento formal',40],['Não acompanhamos',0]],
+ f:{sev:3, prob:3, title:'Risco de estouro de sublimite/teto do Simples sem plano', base:'LC 123/2006, arts. 19 e 20',
+    desc:'Acima de R$ 3,6 mi, ICMS/ISS saem do DAS e passam a ser apurados por fora — quem descobre depois recolhe com multa e juros. O estouro do teto desenquadra a empresa retroativamente, com recálculo integral.',
+    sol:'Monitoramento mensal do acumulado de 12 meses com gatilhos de alerta em 80% e 95% dos limites, e estudo de migração planejada.', prazo:30, exp:['rev',1,3]}},
+
+{id:'x04', p:2, w:3, showIf:p=>p.regime==='simples'&&['comercio','alimentacao','saude','transporte'].includes(p.setor),
+ t:'A empresa revende produtos com tributação monofásica ou substituição tributária (bebidas, medicamentos, cosméticos, autopeças, combustíveis) e segrega essas receitas no PGDAS?',
+ h:'Produtos como bebidas, remédios e cosméticos já trazem o imposto embutido no preço de compra; sem informar isso corretamente, a empresa paga o imposto duas vezes.',
+ opts:[['Sim, receitas segregadas corretamente na apuração',100],['Revendemos esses produtos, mas nunca segregamos',0],['Não revendemos produtos desse tipo',85]],
+ f:{sev:3, prob:5, title:'PIS/COFINS/ICMS pagos em duplicidade (monofásicos/ST)', base:'Lei 10.147/2000; LC 123/2006, art. 18, §4º-A',
+    desc:'Quem revende produtos monofásicos/ST paga o tributo embutido na compra E de novo dentro do DAS quando não segrega as receitas. Farmácias, mercados, bares, autopeças e perfumarias são os casos clássicos — é a tese de recuperação mais lucrativa do Simples.',
+    sol:'Revisar o PGDAS dos últimos 5 anos com cruzamento de NF-e de entrada; recuperar o pago a maior administrativamente e corrigir a apuração daqui em diante.', prazo:60, exp:['rev',1,3], opp:{title:'Recuperação — monofásicos e ST no Simples', pct:[0.8,2.5], desc:'Restituição administrativa dos últimos 5 anos de PIS/COFINS (e eventualmente ICMS-ST) pagos em duplicidade dentro do DAS sobre produtos monofásicos/ST.'}}},
+
+{id:'x05', p:2, w:2, showIf:p=>['presumido','real'].includes(p.regime)&&['comercio','industria','alimentacao','transporte','agro'].includes(p.setor),
+ t:'A empresa já aproveitou a exclusão do ICMS da base de cálculo do PIS/COFINS ("tese do século")?',
+ h:'O ICMS destacado na nota não deveria entrar no cálculo do PIS/COFINS — quem nunca corrigiu isso pode ter dinheiro a recuperar.',
+ opts:[['Sim, já recuperamos/compensamos e apuramos corretamente hoje',100],['Não, nunca tratamos disso',0],['Não sei informar',20]],
+ f:{sev:2, prob:4, title:'Tese do século não aproveitada (ICMS fora do PIS/COFINS)', base:'STF, Tema 69 (RE 574.706)',
+    desc:'O STF definiu que o ICMS destacado não compõe a base do PIS/COFINS. Empresas do Presumido/Real que nunca revisaram têm crédito dos últimos 5 anos e seguem pagando a maior todo mês.',
+    sol:'Levantamento fiscal dos últimos 60 meses e pedido administrativo de restituição/compensação; ajuste imediato da apuração corrente.', prazo:60, exp:['rev',0.5,2], opp:{title:'Recuperação — ICMS fora da base do PIS/COFINS', pct:[1,3], desc:'Crédito estimado dos últimos 5 anos (Tema 69/STF), com apuração sobre as notas e EFDs do período.'}}},
+
+{id:'x06', p:2, w:2, showIf:p=>['presumido','real'].includes(p.regime)&&['servicos','saude','tecnologia','educacao','construcao'].includes(p.setor),
+ t:'A empresa avaliou a exclusão do ISS da base de cálculo do PIS/COFINS?',
+ h:'Mesma lógica da tese anterior, mas para empresas de serviço: o ISS destacado também pode sair da conta do PIS/COFINS.',
+ opts:[['Sim, tese avaliada/aproveitada',100],['Não, nunca tratamos disso',0],['Não sei informar',20]],
+ f:{sev:2, prob:3, title:'Exclusão do ISS da base do PIS/COFINS não avaliada', base:'STF, Tema 118 (em consolidação, na esteira do Tema 69)',
+    desc:'Para prestadores de serviço no Presumido/Real, excluir o ISS da base do PIS/COFINS reduz a alíquota efetiva mensalmente e permite discutir a recuperação do período não prescrito.',
+    sol:'Avaliação da tese com projeção de valores e, conforme o caso, medida administrativa/judicial com apuração dos últimos 5 anos.', prazo:90, exp:['rev',0.3,1.2], opp:{title:'Recuperação — ISS fora da base do PIS/COFINS', pct:[0.5,1.5], desc:'Estimativa condicionada à consolidação do Tema 118/STF e ao perfil de faturamento de serviços.'}}},
+
+{id:'x07', p:2, w:2, showIf:p=>p.regime==='real',
+ t:'Os créditos de PIS/COFINS sobre insumos (conceito ampliado pelo STJ) foram revisados nos últimos anos?',
+ h:'Empresas do Lucro Real podem descontar impostos sobre gastos essenciais à atividade (não só matéria-prima) — muitas deixam esse crédito na mesa.',
+ opts:[['Sim, revisão de créditos recente',100],['Aproveitamos o básico, sem revisão técnica',35],['Nunca revisamos',0]],
+ f:{sev:2, prob:3, title:'Créditos de insumos PIS/COFINS subaproveitados', base:'STJ, REsp 1.221.170 (essencialidade e relevância)',
+    desc:'O STJ ampliou o conceito de insumo: gastos essenciais e relevantes à atividade geram crédito de 9,25%. Empresas do Real que só aproveitam o óbvio deixam créditos em EPIs, fretes, tratamento de resíduos, comissões e mais.',
+    sol:'Revisão fiscal dos últimos 5 anos com matriz de essencialidade por gasto; compensação administrativa dos créditos apurados.', prazo:90, exp:['rev',0.4,1.5], opp:{title:'Recuperação — créditos de insumos (Lucro Real)', pct:[0.5,1.8], desc:'Créditos extemporâneos de PIS/COFINS sobre insumos pelo conceito ampliado do STJ, últimos 5 anos.'}}},
+
+{id:'x08', p:2, w:1, showIf:p=>['3','4'].includes(p.emp)&&p.regime!=='simples',
+ t:'A empresa avaliou limitar as contribuições ao Sistema S (terceiros) à base de 20 salários mínimos?',
+ h:'É a contribuição paga sobre a folha para entidades como Sesi e Senai; há discussão sobre limitar essa cobrança para folhas maiores.',
+ opts:[['Sim, tese avaliada com nosso assessor',100],['Não conhecemos essa discussão',0]],
+ f:{sev:1, prob:2, title:'Contribuições a terceiros sem avaliação do teto (Tema 1079)', base:'STJ, Tema 1079',
+    desc:'Há discussão consolidada sobre limitar a base das contribuições a terceiros (Sistema S) a 20 salários mínimos. Para folhas grandes, o impacto mensal é relevante — a viabilidade depende da modulação aplicada ao caso.',
+    sol:'Avaliação técnica da tese diante da modulação do STJ e do perfil da folha.', prazo:90, exp:['fix',5000,50000]}},
+
+{id:'x09', p:2, w:2,
+ t:'A empresa monitora suas certidões negativas (CNDs) e a situação de parcelamentos?',
+ h:'São as certidões que provam que a empresa está em dia com o Fisco; sem monitorá-las, uma dívida esquecida pode virar bloqueio ou protesto.',
+ opts:[['Sim, CNDs monitoradas e parcelamentos em dia',100],['Verificamos só quando alguém pede (banco, licitação)',40],['Não monitoramos; pode haver pendência que desconhecemos',0]],
+ f:{sev:3, prob:3, title:'Passivo fiscal sem monitoramento (CNDs)', base:'CTN, arts. 205-206; Lei 10.522/2002 (CADIN)',
+    desc:'Débito não conhecido vira dívida ativa com encargos de até 20%, protesto e bloqueio de certidão — travando crédito, licitações e até recebíveis. Parcelamento rompido perde os benefícios e antecipa o vencimento integral.',
+    sol:'Rotina mensal de emissão de CNDs (RFB/PGFN, estadual, municipal, FGTS, trabalhista) com tratamento imediato de pendências.', prazo:30, exp:['rev',0.5,2]}},
+
+{id:'x10', p:2, w:2, showIf:p=>['presumido','real'].includes(p.regime),
+ t:'O emissor de notas/ERP da empresa já está adaptado aos campos de IBS/CBS obrigatórios desde agosto/2026?',
+ h:'São os novos campos da reforma tributária que já aparecem nas notas fiscais desde agosto de 2026 — o sistema emissor precisa estar atualizado.',
+ opts:[['Sim, notas saindo com os novos campos corretamente',100],['Estamos em adaptação',50],['Não sabia dessa obrigação',0]],
+ f:{sev:3, prob:4, title:'NF-e sem os campos IBS/CBS da reforma tributária', base:'LC 214/2025; Nota Técnica NF-e — obrigatoriedade desde 03/08/2026 para o regime regular',
+    desc:'2026 é o ano-teste da reforma (CBS 0,9% + IBS 0,1% informativos). Notas sem os campos obrigatórios passam a ser rejeitadas ou geram inconsistência fiscal, e a empresa chega despreparada à virada de 2027, quando a CBS substitui PIS/COFINS.',
+    sol:'Atualizar emissor/ERP, validar o destaque informativo de IBS/CBS e treinar o faturamento; revisar precificação para a transição.', prazo:30, exp:['fix',5000,50000]}},
+
+{id:'x11', p:2, w:1,
+ t:'Contratos de longo prazo (fornecimento, locação, serviços continuados) têm cláusula de reequilíbrio para a transição da reforma tributária (2026–2033)?',
+ h:'Contratos longos podem ficar defasados com as mudanças de imposto da reforma tributária se não previrem um ajuste automático de preço.',
+ opts:[['Sim, cláusulas revisadas',100],['Não temos contratos longos relevantes',80],['Temos contratos longos sem cláusula de reequilíbrio tributário',0]],
+ f:{sev:2, prob:3, title:'Contratos longos sem cláusula de reequilíbrio tributário', base:'LC 214/2025 (transição 2026–2033); CC, arts. 317 e 478',
+    desc:'A carga tributária de contratos que atravessam a transição vai mudar. Sem cláusula de reequilíbrio, a parte prejudicada absorve o aumento — renegociar depois, sem previsão contratual, é muito mais difícil.',
+    sol:'Aditivo com cláusula de reequilíbrio tributário nos contratos com vigência além de 2026.', prazo:90, exp:['rev',0.3,1]}},
+
+{id:'x12', p:2, w:2,
+ t:'Existe um planejamento tributário formal, revisado com o contador ao menos 1× por ano?',
+ h:'É a diferença entre decidir sobre impostos antes (dá para economizar) ou só descobrir o valor depois que ele já nasceu (não dá mais para evitar).',
+ opts:[['Sim, reunião anual de planejamento com projeções',100],['O contador cuida do operacional, sem planejamento estratégico',35],['Relação com contador é só entrega de guias',0]],
+ f:{sev:2, prob:4, title:'Gestão tributária reativa, sem planejamento', base:'Elisão fiscal lícita — planejamento prévio ao fato gerador',
+    desc:'Sem planejamento, a empresa só descobre o tributo depois que ele nasce. Distribuição de lucros × pró-labore, momento de investimentos, créditos e benefícios setoriais são decisões que só economizam se tomadas antes.',
+    sol:'Rito anual de planejamento tributário (novembro/dezembro) com pauta mínima: regime, pró-labore × lucros, créditos, benefícios e reforma.', prazo:60, exp:['rev',1,3]}},
+
+/* ---------- PILAR 3 — SOCIETÁRIO ---------- */
+{id:'s01', p:3, w:2,
+ t:'O contrato social reflete a realidade atual da empresa (objeto, atividades, administração, endereços)?',
+ h:'É o documento de identidade da empresa; desatualizado, pode travar notas fiscais, licenças e seguros.',
+ opts:[['Sim, atualizado e revisado',100],['Está defasado em alguns pontos',40],['Nunca foi alterado desde a abertura / não sei',10]],
+ f:{sev:2, prob:3, title:'Contrato social defasado', base:'Código Civil, arts. 997 e seguintes',
+    desc:'Objeto desatualizado compromete notas fiscais, enquadramento de CNAE, licenças e seguros. Cláusulas de administração vagas permitem que qualquer sócio obrigue a empresa sozinho.',
+    sol:'Reforma do contrato social: objeto, CNAEs, regras de administração e alçadas de assinatura.', prazo:60, exp:['fix',5000,30000]}},
+
+{id:'s02', p:3, w:3, showIf:p=>+p.socios>=2,
+ t:'Existe acordo de sócios regulando saída, morte, divórcio, venda de quotas e resolução de impasses?',
+ h:'É o documento que evita que a sociedade vire um litígio.',
+ opts:[['Sim, acordo de sócios assinado e atualizado',100],['Há entendimentos verbais entre os sócios',15],['Não existe nada além do contrato social',0]],
+ f:{sev:4, prob:3, title:'Sociedade sem acordo de sócios', base:'CC, art. 997; Lei 6.404/76, art. 118 (aplicação analógica)',
+    desc:'Sem regras prévias, qualquer evento crítico — morte, divórcio, desligamento, impasse 50/50 — desemboca em dissolução judicial: anos de processo, empresa paralisada e valor destruído. É uma das principais causas jurídicas de morte de PMEs.',
+    sol:'Acordo de quotistas com cláusulas de buy-sell, tag/drag along, não concorrência, ingresso de herdeiros e mecanismo de desempate.', prazo:90, exp:['rev',5,15]}},
+
+{id:'s03', p:3, w:3, showIf:p=>+p.socios>=2,
+ t:'Os sócios sabem exatamente o que acontece com as quotas se um deles falecer?',
+ h:'Se um sócio falecer sem regra definida, as quotas dele entram em inventário — processo demorado que pode travar contas e decisões da empresa.',
+ opts:[['Sim, há regra clara (contrato social/acordo) e seguro/liquidez prevista',100],['Nunca tratamos do assunto',0],['Sabemos vagamente que os herdeiros assumem',25]],
+ f:{sev:4, prob:2, title:'Sucessão de quotas indefinida', base:'CC, arts. 1.028 a 1.032; LC 227/2026 (novo ITCMD)',
+    desc:'Sem regra, as quotas do sócio falecido entram em inventário: contas podem ser bloqueadas, herdeiros sem perfil ingressam na sociedade e o ITCMD (progressivo até 8%, agora sobre valor de mercado) incide sobre quotas avaliadas a mercado.',
+    sol:'Cláusula sucessória no contrato social + acordo de sócios com apuração de haveres definida e seguro de vida cruzado entre sócios para liquidez.', prazo:90, exp:['rev',4,10]}},
+
+{id:'s04', p:3, w:2,
+ t:'Os sócios têm pró-labore formal, separado da distribuição de lucros?',
+ h:'É o salário formal do sócio que trabalha na empresa, com INSS recolhido — diferente da distribuição de lucros.',
+ opts:[['Sim, pró-labore definido com INSS recolhido + distribuição documentada',100],['Retiradas informais conforme a necessidade',10],['Só distribuição de lucros, sem pró-labore',30]],
+ f:{sev:3, prob:4, title:'Retiradas informais — pró-labore irregular', base:'Lei 8.212/91, art. 21; IN RFB 2.110/2022',
+    desc:'Sócio que administra deve ter pró-labore com INSS. Retirada informal é glosada em fiscalização como remuneração disfarçada (INSS + IRPF com multa de ofício de 75%) e enfraquece a separação patrimonial.',
+    sol:'Definir pró-labore compatível com a função e formalizar a política de distribuição de lucros com base em resultado apurado.', prazo:30, exp:['rev',1,3]}},
+
+{id:'s05', p:3, w:3,
+ t:'Despesas pessoais dos sócios passam pelo caixa ou cartão da empresa?',
+ h:'Pagar contas pessoais com o cartão ou conta da empresa mistura o CPF com o CNPJ e é a principal porta de entrada para que dívidas da empresa alcancem os bens pessoais dos sócios.',
+ opts:[['Nunca — separação total entre PF e PJ',100],['Ocasionalmente, em situações pontuais',30],['Com frequência — a conta da empresa cobre despesas da família',0]],
+ f:{sev:4, prob:4, title:'Confusão patrimonial entre CPF e CNPJ', base:'CC, art. 50 (desconsideração da personalidade jurídica); Lei 13.874/2019',
+    desc:'A confusão patrimonial é o principal gatilho para a desconsideração da personalidade jurídica: dívidas da empresa alcançam os bens pessoais dos sócios (casa, carro, investimentos). Também gera glosa fiscal das despesas.',
+    sol:'Cartão e conta exclusivos da PJ, política de reembolso documentada e regularização contábil das retiradas já feitas.', prazo:30, exp:['rev',3,10]}},
+
+{id:'s06', p:3, w:3, showIf:p=>p.patrimonio==='s'||['c','d','e'].includes(p.fat),
+ t:'Existe planejamento sucessório estruturado (holding, doação com usufruto, testamento)?',
+ h:'Com o novo ITCMD (LC 227/2026), adiar o planejamento ficou mais caro.',
+ opts:[['Sim, estrutura implantada ou em implantação',100],['Já pensamos, mas nunca estruturamos',25],['Nunca tratamos do assunto',0]],
+ f:{sev:3, prob:2, title:'Patrimônio sem planejamento sucessório', base:'LC 227/2026 (ITCMD progressivo até 8%, base a valor de mercado); CC, arts. 1.784+',
+    desc:'Sem planejamento, a sucessão ocorre por inventário: custo típico de 10–20% do patrimônio (ITCMD + custas + honorários), anos de bloqueio e risco de litígio entre herdeiros paralisando a empresa. A LC 227/2026 tornou o ITCMD progressivo e a base passou a valor de mercado — estados podem chegar a 8%.',
+    sol:'Estudo sucessório: holding patrimonial, doação de quotas com reserva de usufruto e cláusulas de proteção (incomunicabilidade, impenhorabilidade), antes das alíquotas máximas estaduais.', prazo:90, exp:['rev',8,20]}},
+
+{id:'s07', p:3, w:2,
+ t:'Bens pessoais dos sócios estão dados em garantia de dívidas da empresa (avais, fianças, alienações)?',
+ h:'Aval e fiança são quando o sócio compromete o próprio patrimônio para garantir uma dívida da empresa — e continuam valendo mesmo depois de renegociações.',
+ opts:[['Não, ou apenas em operações pontuais e mapeadas',100],['Sim, em várias operações, sem controle consolidado',20],['Não sabemos exatamente o que está garantindo o quê',0]],
+ f:{sev:3, prob:3, title:'Patrimônio pessoal exposto em garantias não mapeadas', base:'CC, arts. 818+ (fiança) e 897+ (aval)',
+    desc:'Avais e fianças sobrevivem a renegociações e podem ser executados diretamente contra os bens pessoais. Sem mapa consolidado, o sócio não sabe o tamanho real da própria exposição.',
+    sol:'Mapa de garantias por operação; renegociar substituição de garantias pessoais por garantias da própria operação (recebíveis, alienação do bem financiado).', prazo:60, exp:['rev',2,8]}},
+
+{id:'s08', p:3, w:1, showIf:p=>+p.socios>=2,
+ t:'O regime de bens do casamento dos sócios foi considerado na estrutura societária (cláusulas de incomunicabilidade)?',
+ h:'Em caso de divórcio de um sócio, o ex-cônjuge pode ter direito a parte do valor das quotas da empresa, dependendo do regime de casamento.',
+ opts:[['Sim, tratado no contrato/acordo',100],['Nunca foi considerado',0]],
+ f:{sev:2, prob:2, title:'Regime de bens dos sócios ignorado', base:'CC, arts. 1.639+ e 1.027',
+    desc:'Divórcio de sócio pode levar o ex-cônjuge a exigir apuração de haveres sobre as quotas — impactando o caixa da empresa em momento imprevisível.',
+    sol:'Cláusulas de incomunicabilidade e regras de apuração de haveres em caso de divórcio no acordo de sócios.', prazo:90, exp:['rev',2,6]}},
+
+{id:'s09', p:3, w:2,
+ t:'Se o principal gestor ficar 90 dias afastado, a empresa continua operando (procurações, acessos, alçadas)?',
+ h:'Testa se a empresa sobrevive a um afastamento longo do dono — sem procurações e acessos organizados, até pagar contas pode travar.',
+ opts:[['Sim, há substitutos, procurações e acessos organizados',100],['Funcionaria com dificuldade',45],['A operação depende integralmente de uma pessoa',0]],
+ f:{sev:3, prob:2, title:'Dependência crítica de pessoa-chave', base:'Governança — continuidade de negócio',
+    desc:'Doença ou acidente do fundador sem plano de continuidade paralisa pagamentos, contratos e decisões. Bancos bloqueiam movimentação sem procuração válida.',
+    sol:'Kit de continuidade: procurações, segundo administrador no contrato social, matriz de acessos e instruções documentadas.', prazo:60, exp:['rev',2,6]}},
+
+/* ---------- PILAR 4 — CONTRATOS ---------- */
+{id:'c01', p:4, w:3,
+ t:'Que parcela das operações com clientes e fornecedores é coberta por contrato escrito assinado?',
+ h:'Sem contrato assinado, qualquer desentendimento sobre prazo, preço ou escopo vira a palavra de um contra a do outro na Justiça.',
+ opts:[['Praticamente todas (acima de 80%)',100],['As principais, talvez metade',45],['Minoria — trabalhamos na confiança',0]],
+ f:{sev:3, prob:4, title:'Operações sem contrato escrito', base:'CC, arts. 421 e seguintes; ônus probatório (CPC, art. 373)',
+    desc:'Sem contrato, cada divergência vira disputa de versões: escopo, prazo, preço e multa ficam à mercê da interpretação judicial. Cobrar inadimplente sem contrato é mais lento, caro e incerto.',
+    sol:'Contratos-padrão por tipo de operação (venda, prestação, fornecimento) com aceite formal — inclusive digital.', prazo:60, exp:['rev',2,6]}},
+
+{id:'c02', p:4, w:2,
+ t:'Os contratos usados têm as cláusulas essenciais (multa, juros, correção, rescisão, foro, limitação de responsabilidade)?',
+ h:'São as regras que protegem a empresa em caso de atraso ou descumprimento: multa, juros, correção, rescisão e o local onde uma eventual disputa será resolvida (foro).',
+ opts:[['Sim, revisados por advogado',100],['Usamos modelos da internet adaptados',30],['Não sei o que os contratos preveem',0]],
+ f:{sev:2, prob:3, title:'Contratos sem cláusulas essenciais', base:'CC, arts. 389+ (inadimplemento), 408+ (cláusula penal)',
+    desc:'Modelo genérico não prevê multa adequada, reajuste, limitação de responsabilidade nem hipóteses de rescisão — a empresa fica sem alavanca na renegociação e exposta a indenizações abertas.',
+    sol:'Revisão jurídica com checklist de 12 cláusulas essenciais por tipo de contrato.', prazo:60, exp:['rev',1,4]}},
+
+{id:'c03', p:4, w:2,
+ t:'Existe régua de cobrança estruturada para inadimplência (prazos, notificação, protesto, negativação)?',
+ h:'É uma sequência organizada de passos para cobrar quem não paga (lembrete, notificação, protesto), em vez de cobrar só quando lembrar.',
+ opts:[['Sim, régua definida e executada',100],['Cobramos informalmente, sem padrão',40],['Praticamente não cobramos — vira prejuízo',0]],
+ f:{sev:2, prob:4, title:'Inadimplência sem régua de cobrança', base:'Lei 9.492/97 (protesto); CC, art. 397 (mora)',
+    desc:'Crédito parado é margem destruída. Sem régua, títulos prescrevem, a prova se perde e a empresa financia o cliente inadimplente com o próprio caixa.',
+    sol:'Régua: lembrete (D+3), notificação formal (D+15), protesto/negativação (D+30), cobrança judicial ou cessão (D+60).', prazo:30, exp:['rev',1,4]}},
+
+{id:'c04', p:4, w:1,
+ t:'Em vendas ou projetos de maior valor, a empresa exige garantias (sinal, garantia real, fiança, seguro-garantia)?',
+ h:'Em negócios de maior valor, exigir um sinal, fiança ou seguro reduz o prejuízo se o cliente não pagar.',
+ opts:[['Sim, conforme o risco da operação',100],['Raramente',40],['Nunca',0]],
+ f:{sev:1, prob:3, title:'Operações relevantes sem garantia', base:'CC — garantias reais e fidejussórias',
+    desc:'Concentração de faturamento em poucos clientes sem garantia transforma um calote em crise de caixa.',
+    sol:'Política de crédito com matriz de garantias por faixa de valor e análise cadastral prévia.', prazo:60, exp:['rev',1,3]}},
+
+{id:'c05', p:4, w:2, showIf:p=>p.b2c==='s',
+ t:'As políticas de troca, garantia, arrependimento e atendimento seguem o Código de Defesa do Consumidor?',
+ h:'É o Código de Defesa do Consumidor — quem vende direto para pessoa física precisa seguir regras específicas de troca, garantia e arrependimento.',
+ opts:[['Sim, políticas formalizadas e equipe treinada',100],['Resolvemos caso a caso',35],['Não temos políticas formais',0]],
+ f:{sev:2, prob:4, title:'Exposição consumerista (CDC) sem políticas', base:'CDC — arts. 18 (vícios), 49 (arrependimento), 39 (práticas abusivas)',
+    desc:'No B2C, a inversão do ônus da prova é a regra: sem políticas e registros, cada reclamação no Procon ou juizado tende a ser perdida, com dano moral frequente.',
+    sol:'Políticas formais de troca/garantia/arrependimento, registro de atendimentos e adequação da publicidade.', prazo:60, exp:['rev',0.5,2]}},
+
+{id:'c06', p:4, w:2,
+ t:'A marca principal da empresa está registrada no INPI?',
+ h:'No Brasil, quem registra a marca primeiro é o dono dela, mesmo que outra empresa já a use há anos sem registro.',
+ opts:[['Sim, registro concedido ou depositado',100],['Nunca registramos',0],['Não sei',20]],
+ f:{sev:3, prob:2, title:'Marca sem registro no INPI', base:'Lei 9.279/96, arts. 122+ — o direito nasce do registro, não do uso',
+    desc:'No Brasil vale quem registra primeiro. Terceiro que registrar sua marca pode obrigá-lo a abandonar o nome construído por anos — perdendo clientela, domínio e identidade — ou a pagar por ele.',
+    sol:'Busca de anterioridade e depósito imediato nas classes corretas (investimento baixo frente ao risco).', prazo:30, exp:['rev',1,5]}},
+
+{id:'c07', p:4, w:1,
+ t:'Fornecedores críticos (dos quais a operação depende) têm contrato com prazo, SLA e multa?',
+ h:'É o fornecedor sem o qual a operação para; sem contrato com ele, a empresa fica refém de reajustes ou atrasos, sem nenhuma proteção.',
+ opts:[['Sim, formalizados',100],['Relação informal com os principais',30],['Não avaliamos dependência de fornecedores',0]],
+ f:{sev:1, prob:3, title:'Dependência de fornecedor crítico sem contrato', base:'CC, arts. 421+; gestão de risco de suprimento',
+    desc:'Fornecedor único sem contrato pode reajustar, atrasar ou romper sem consequência — e a empresa para junto.',
+    sol:'Contratos com SLA e multa para fornecedores críticos + plano B homologado.', prazo:90, exp:['rev',0.5,2]}},
+
+{id:'c08', p:4, w:2,
+ t:'A empresa responde atualmente a ações judiciais (cíveis, trabalhistas, fiscais) ou tem histórico recente?',
+ h:'São os processos judiciais em andamento contra a empresa; sem acompanhamento centralizado, prazos podem passar em branco e gerar perdas automáticas.',
+ opts:[['Não há ações em curso',100],['Há 1–2 ações pontuais, controladas',55],['Há várias ações ou não temos visão consolidada',0]],
+ f:{sev:3, prob:4, title:'Contencioso sem gestão consolidada', base:'Gestão de passivo judicial; CPC (prazos e revelia)',
+    desc:'Ações sem acompanhamento centralizado geram revelia, penhoras-surpresa e provisões desconhecidas. O passivo judicial precisa estar mapeado, provisionado e com estratégia por processo.',
+    sol:'Inventário do contencioso: lista de processos, valores, fase, risco (provável/possível/remoto) e estratégia por caso.', prazo:30, exp:['rev',2,8]}},
+
+/* ---------- PILAR 5 — LGPD ---------- */
+{id:'l01', p:5, w:3,
+ t:'A empresa iniciou a adequação à LGPD (mapeamento de dados e bases legais)?',
+ h:'LGPD é a lei que regula como empresas coletam e usam dados pessoais de clientes e funcionários — vale para empresas de qualquer porte.',
+ opts:[['Sim, adequação feita ou avançada',100],['Começamos algo, mas parou',35],['Nada foi feito',0]],
+ f:{sev:3, prob:3, title:'Nenhuma adequação à LGPD', base:'Lei 13.709/2018, arts. 6º a 10 e 52; Resolução CD/ANPD 2/2022 (pequeno porte)',
+    desc:'A ANPD virou agência reguladora e fiscaliza por setor — e a primeira multa foi contra uma microempresa. Multas chegam a 2% do faturamento, além da responsabilidade civil por vazamentos, que independe de multa.',
+    sol:'Adequação proporcional ao porte: mapeamento de dados, definição de bases legais, políticas e termos — o regime simplificado da ANPD reduz formalidades, não obrigações.', prazo:90, exp:['rev',0.5,2]}},
+
+{id:'l02', p:5, w:2,
+ t:'Há política de privacidade publicada e um canal para o titular de dados exercer seus direitos?',
+ h:'É o documento que explica para o cliente ou funcionário como seus dados são usados, e o canal para ele pedir a exclusão ou correção desses dados.',
+ opts:[['Sim, política publicada e canal ativo',100],['Temos algo genérico copiado',35],['Não temos',0]],
+ f:{sev:2, prob:3, title:'Sem política de privacidade e canal do titular', base:'LGPD, arts. 9º, 18 e 41',
+    desc:'Pedido de titular não respondido em prazo é a porta de entrada típica de denúncia à ANPD e de ação individual.',
+    sol:'Política de privacidade real (não copiada), canal de atendimento ao titular e fluxo de resposta em até 15 dias.', prazo:60, exp:['fix',5000,60000]}},
+
+{id:'l03', p:5, w:2, showIf:hasEmp,
+ t:'Os dados dos funcionários (exames, documentos, biometria) são tratados com base legal e acesso controlado?',
+ h:'Exames médicos, documentos e biometria dos funcionários são dados sensíveis e exigem cuidado extra de acesso e armazenamento.',
+ opts:[['Sim, RH orientado, com termos e acesso restrito',100],['Dossiês existem, sem controle formal de acesso',40],['Nunca tratamos disso',0]],
+ f:{sev:2, prob:3, title:'Dados sensíveis de funcionários sem governança', base:'LGPD, art. 11 (dados sensíveis); art. 46 (segurança)',
+    desc:'Dossiês de RH concentram dados sensíveis (saúde, biometria). Vazamento ou uso indevido gera dano moral trabalhista em série, além de sanção da ANPD.',
+    sol:'Termos de tratamento no dossiê admissional, matriz de acesso ao RH e descarte seguro após os prazos legais.', prazo:60, exp:['emp',200,1000]}},
+
+{id:'l04', p:5, w:1, showIf:p=>p.dados==='s',
+ t:'Fornecedores que tratam dados por sua conta (sistemas, agências, contabilidade) têm cláusulas LGPD no contrato?',
+ h:'Empresas terceiras que mexem nos dados dos seus clientes por você (sistema, agência, contabilidade) também colocam sua empresa em risco se vazarem algo.',
+ opts:[['Sim, contratos com cláusulas de proteção de dados',100],['Não, contratos antigos sem essas cláusulas',0]],
+ f:{sev:2, prob:2, title:'Operadores de dados sem cláusulas contratuais', base:'LGPD, arts. 39 e 42 (responsabilidade solidária controlador/operador)',
+    desc:'Se a agência, o software ou a contabilidade vazar dados dos seus clientes, a sua empresa responde solidariamente. A cláusula contratual organiza o direito de regresso.',
+    sol:'Aditivo LGPD nos contratos com todos os operadores de dados.', prazo:90, exp:['fix',5000,40000]}},
+
+{id:'l05', p:5, w:2,
+ t:'Existe um plano de resposta a incidentes (o que fazer nas primeiras 48h de um vazamento)?',
+ h:'É o roteiro do que fazer nas primeiras horas se os dados da empresa vazarem — quem aciona quem e o que precisa ser comunicado.',
+ opts:[['Sim, plano definido com responsáveis',100],['Não, reagiríamos improvisando',0]],
+ f:{sev:2, prob:2, title:'Sem plano de resposta a incidentes de dados', base:'LGPD, art. 48; Regulamento de Comunicação de Incidentes da ANPD',
+    desc:'Incidente relevante deve ser comunicado à ANPD e aos titulares em prazo curto. Resposta improvisada agrava a sanção — a ANPD avalia a conduta pós-incidente na dosimetria da multa.',
+    sol:'Plano de 1 página: quem aciona quem, prazos, modelo de comunicação e registro do incidente.', prazo:60, exp:['fix',5000,50000]}},
+
+{id:'l06', p:5, w:1, showIf:p=>p.b2c==='s'||p.dados==='s',
+ t:'As ações de marketing (listas, disparos, remarketing) têm base legal — consentimento ou legítimo interesse documentado?',
+ h:'Comprar listas de contatos ou disparar mensagens sem consentimento claro é uma das infrações mais fáceis de denunciar à ANPD.',
+ opts:[['Sim, com opt-in/opt-out funcionando',100],['Compramos listas ou disparamos sem base clara',0],['Não fazemos marketing ativo com dados',85]],
+ f:{sev:1, prob:3, title:'Marketing sem base legal de tratamento', base:'LGPD, arts. 7º, 8º e 18',
+    desc:'Lista comprada e disparo sem opt-out são infrações típicas — fáceis de denunciar e de provar.',
+    sol:'Higienizar bases, implantar opt-in/opt-out e registrar a base legal de cada campanha.', prazo:60, exp:['fix',3000,30000]}},
+
+/* ---------- PILAR 6 — FINANCEIRO ---------- */
+{id:'f01', p:6, w:2,
+ t:'A empresa tem conta bancária PJ exclusiva, sem mistura com contas pessoais?',
+ h:'Misturar a conta da empresa com a conta pessoal torna o resultado do negócio impossível de auditar corretamente.',
+ opts:[['Sim, movimentação 100% segregada',100],['Na maior parte, com alguma mistura',40],['Contas misturadas',0]],
+ f:{sev:3, prob:4, title:'Contas PF e PJ misturadas', base:'CC, art. 50; boas práticas contábeis',
+    desc:'Além do risco de desconsideração da personalidade jurídica, a mistura torna o resultado da empresa inauditável — nenhum número é confiável para decidir.',
+    sol:'Conta e cartão PJ exclusivos + rotina de conciliação mensal.', prazo:30, exp:['rev',2,6]}},
+
+{id:'f02', p:6, w:3,
+ t:'Existe fluxo de caixa projetado para os próximos 90 dias?',
+ h:'É a previsão de quanto vai entrar e sair de dinheiro nos próximos meses — sem ela, a empresa só descobre o problema de caixa quando ele já chegou.',
+ opts:[['Sim, projetado e revisado semanalmente',100],['Controlamos o realizado, sem projeção',45],['Não há controle estruturado de caixa',0]],
+ f:{sev:3, prob:4, title:'Caixa sem projeção — gestão no retrovisor', base:'Gestão financeira — fluxo de caixa projetado',
+    desc:'Falta de capital de giro está entre as principais causas de morte de PMEs (Sebrae). Sem projeção, a empresa descobre o buraco quando ele chega — e capta crédito caro, na pior hora.',
+    sol:'Fluxo de caixa projetado de 13 semanas, revisado toda segunda-feira, com gatilhos de ação por saldo mínimo.', prazo:30, exp:['rev',2,6]}},
+
+{id:'f03', p:6, w:2,
+ t:'A empresa conhece a margem real por produto/serviço (incluindo impostos e custos indiretos)?',
+ h:'É o lucro que realmente sobra em cada produto ou serviço, depois de descontar todos os impostos e custos — sem isso, dá para vender mais e lucrar menos.',
+ opts:[['Sim, margens apuradas e revisadas',100],['Temos noção geral, sem apuração técnica',40],['Precificamos por concorrência/intuição',0]],
+ f:{sev:2, prob:4, title:'Precificação sem margem apurada', base:'Gestão de custos; impacto da transição tributária na precificação',
+    desc:'Sem margem por item, a empresa pode vender mais e lucrar menos. Com a transição da reforma tributária mudando a carga por produto, precificar no escuro ficou mais perigoso.',
+    sol:'Estudo de margem por linha (markup com carga tributária real) e política de desconto com alçadas.', prazo:60, exp:['rev',2,8]}},
+
+{id:'f04', p:6, w:2,
+ t:'O endividamento é gerenciado (custo médio conhecido, mapa de garantias, calendário de vencimentos)?',
+ h:'Saber o custo, prazo e garantia de cada dívida evita que juros altos corroam o lucro sem que ninguém perceba.',
+ opts:[['Sim, dívidas mapeadas com estratégia',100],['Sabemos o total, sem gestão do custo',40],['Não temos visão consolidada das dívidas',0],['Não temos dívidas relevantes',95]],
+ f:{sev:2, prob:3, title:'Endividamento sem gestão', base:'Gestão financeira — custo de capital',
+    desc:'Dívidas caras não reperfiladas consomem a margem silenciosamente. Sem mapa de garantias, a empresa não sabe o que está em risco em caso de inadimplência.',
+    sol:'Mapa de dívidas (taxa, prazo, garantia) e reperfilamento das linhas mais caras.', prazo:60, exp:['rev',1,4]}},
+
+{id:'f05', p:6, w:2,
+ t:'Existe reserva de emergência equivalente a pelo menos 1 mês de custos fixos?',
+ h:'É o dinheiro guardado para cobrir alguns meses de despesas fixas caso a receita caia de repente.',
+ opts:[['Sim, reserva de 3+ meses',100],['Cerca de 1 mês',65],['Não há reserva — o caixa opera no limite',0]],
+ f:{sev:2, prob:3, title:'Operação sem reserva de contingência', base:'Gestão de riscos financeiros',
+    desc:'Qualquer choque — perda de cliente, autuação, pandemia — vira crise imediata quando não há colchão. A reserva é o que compra tempo para decidir bem.',
+    sol:'Meta de reserva escalonada (1 → 3 meses de custo fixo) com aporte automático mensal.', prazo:90, exp:['rev',1,3]}},
+
+{id:'f06', p:6, w:2,
+ t:'A inadimplência dos clientes é medida e acompanhada mensalmente?',
+ h:'É o quanto os clientes devem e não pagam; sem medir isso todo mês, o problema costuma ser maior do que parece.',
+ opts:[['Sim, indicador mensal com metas',100],['Sabemos "de cabeça" quem deve',40],['Não medimos',0]],
+ f:{sev:1, prob:3, title:'Inadimplência não mensurada', base:'Gestão de crédito e cobrança',
+    desc:'O que não é medido não é gerenciado: a inadimplência real costuma ser o dobro da percebida.',
+    sol:'Indicador mensal (% da carteira vencida > 30/60/90 dias) integrado à régua de cobrança.', prazo:30, exp:['rev',0.5,2]}},
+
+{id:'f07', p:6, w:1,
+ t:'A empresa tem seguros adequados (patrimônio, responsabilidade civil, pessoas-chave)?',
+ h:'Cobrem prejuízos grandes e inesperados (incêndio, processo, morte de sócio-chave) que o caixa da empresa sozinho não aguentaria.',
+ opts:[['Sim, mapa de seguros revisado',100],['Apenas seguros básicos/obrigatórios',50],['Não temos seguros',0]],
+ f:{sev:2, prob:2, title:'Riscos seguráveis sem cobertura', base:'Gestão de riscos — transferência via seguro',
+    desc:'Incêndio, responsabilidade civil ou morte de pessoa-chave sem seguro transformam evento pontual em ameaça existencial.',
+    sol:'Mapa de riscos seguráveis com corretor independente e contratação priorizada.', prazo:90, exp:['rev',2,10]}},
+
+{id:'f08', p:6, w:2,
+ t:'A gestão recebe relatórios financeiros mensais (DRE gerencial, indicadores)?',
+ h:'DRE gerencial é o relatório que mostra o lucro real do negócio mês a mês — diferente do balancete contábil, que serve para o Fisco.',
+ opts:[['Sim, DRE mensal analisada em reunião',100],['Recebemos balancetes contábeis que ninguém analisa',35],['Não recebemos relatórios',0]],
+ f:{sev:2, prob:4, title:'Decisão sem informação gerencial', base:'Governança financeira',
+    desc:'Balancete fiscal não é ferramenta de decisão. Sem DRE gerencial, o lucro real do negócio é uma suposição.',
+    sol:'DRE gerencial mensal (regime de competência, visão por centro de resultado) com rito fixo de análise.', prazo:60, exp:['rev',1,4]}},
+
+{id:'f09', p:6, w:1,
+ t:'Existe orçamento anual com metas de receita, custo e lucro?',
+ h:'É a meta de receita, custo e lucro definida no início do ano, usada como referência para saber se o resultado está bom ou ruim.',
+ opts:[['Sim, orçamento acompanhado mensalmente',100],['Metas informais de faturamento',45],['Não fazemos orçamento',0]],
+ f:{sev:1, prob:3, title:'Sem orçamento anual', base:'Planejamento financeiro',
+    desc:'Sem orçamento não há referência: qualquer resultado "parece bom". Crescimento sem meta de margem é o caminho clássico para crescer e quebrar.',
+    sol:'Orçamento anual simplificado (receita, custos, investimento, lucro-alvo) com revisão trimestral.', prazo:90, exp:['rev',0.5,2]}},
+
+/* ---------- PILAR 7 — GOVERNANÇA ---------- */
+{id:'g01', p:7, w:2,
+ t:'Existem alçadas de decisão definidas (quem pode assinar, comprar, contratar e até que valor)?',
+ h:'É a régua que define quem pode aprovar compras, assinar contratos ou contratar até determinado valor, sem depender do dono para tudo.',
+ opts:[['Sim, matriz de alçadas formalizada',100],['Regras informais conhecidas pela equipe',45],['Tudo passa pelo dono, sem regras escritas',0]],
+ f:{sev:2, prob:3, title:'Sem matriz de alçadas', base:'Governança corporativa — controles internos',
+    desc:'Sem alçadas, qualquer pessoa pode comprometer a empresa — e fraudes internas encontram terreno livre. É também o que trava o crescimento: o dono vira gargalo.',
+    sol:'Matriz de alçadas de 1 página: valores × cargos × tipo de decisão, com dupla assinatura acima de limites.', prazo:30, exp:['rev',0.5,2]}},
+
+{id:'g02', p:7, w:2,
+ t:'Os processos críticos da operação estão documentados (POPs, manuais)?',
+ h:'São os manuais/passo a passo das rotinas mais importantes da empresa — sem eles, o conhecimento vai embora quando a pessoa sai.',
+ opts:[['Sim, processos-chave documentados e usados',100],['Alguma documentação desatualizada',45],['Está tudo na cabeça das pessoas',0]],
+ f:{sev:2, prob:3, title:'Processos não documentados', base:'Governança — gestão do conhecimento',
+    desc:'Conhecimento na cabeça das pessoas sai pela porta com elas. Sem POPs, cada substituição é um recomeço e a qualidade oscila.',
+    sol:'Documentar os 10 processos mais críticos em formato simples (checklist + vídeo curto).', prazo:90, exp:['rev',0.5,2]}},
+
+{id:'g03', p:7, w:3,
+ t:'Licenças e alvarás estão vigentes (funcionamento, bombeiros, vigilância sanitária, ambiental — conforme o setor)?',
+ h:'São as autorizações para a empresa funcionar (bombeiros, vigilância sanitária, ambiental); vencidas, podem levar à interdição do estabelecimento.',
+ opts:[['Sim, todos vigentes com controle de vencimento',100],['Alguns podem estar vencidos — não temos controle',20],['Não sabemos a situação',0]],
+ f:{sev:3, prob:3, title:'Licenças e alvarás sem controle', base:'Legislação municipal/estadual; Lei 6.437/77 (sanitária); legislação ambiental',
+    desc:'Alvará vencido pode gerar interdição do estabelecimento — faturamento zero da noite para o dia — além de multas e responsabilidade pessoal em caso de acidente em local irregular.',
+    sol:'Inventário de licenças por unidade com calendário de renovação e responsável nomeado.', prazo:30, exp:['rev',2,8]}},
+
+{id:'g04', p:7, w:1, showIf:p=>+p.socios>=2,
+ t:'As decisões relevantes entre sócios são registradas em atas ou registros formais?',
+ h:'É o registro formal das decisões tomadas entre os sócios — sem ele, fica impossível provar o que foi combinado numa disputa futura.',
+ opts:[['Sim, deliberações documentadas',100],['Decidimos no WhatsApp/verbalmente',0]],
+ f:{sev:1, prob:2, title:'Deliberações societárias sem registro', base:'CC, arts. 1.071+ (deliberações sociais)',
+    desc:'Decisão não documentada é impossível de provar em disputa futura entre sócios — cada memória conta uma história.',
+    sol:'Rito simples de ata (1 página) para decisões acima de alçada definida.', prazo:30, exp:['fix',5000,30000]}},
+
+{id:'g05', p:7, w:2, showIf:hasEmp,
+ t:'Existe código de conduta e canal de denúncias acessível à equipe?',
+ h:'Além de boa prática, é medida de controle exigível na gestão de riscos psicossociais da NR-1.',
+ opts:[['Sim, implantados e comunicados',100],['Em elaboração',50],['Não temos',0]],
+ f:{sev:2, prob:3, title:'Sem código de conduta e canal de denúncias', base:'NR-1 (medidas de controle psicossocial); Lei 14.457/2022 (CIPA e prevenção ao assédio)',
+    desc:'A Lei 14.457/22 exige das empresas com CIPA medidas de prevenção ao assédio, incluindo canal de denúncias. A ausência agrava condenações por assédio moral/sexual e pesa contra a empresa na fiscalização da NR-1.',
+    sol:'Código de conduta enxuto + canal de denúncia (pode ser terceirizado de baixo custo) + treinamento registrado.', prazo:60, exp:['emp',300,1500]}},
+
+{id:'g06', p:7, w:1,
+ t:'Os dados da empresa têm backup e controle básico de acesso (senhas, e-mails, sistemas)?',
+ h:'Testar a restauração do backup é o que garante que, se o sistema cair, os dados realmente voltam.',
+ opts:[['Sim, backup testado e acessos controlados',100],['Backup existe, nunca testado',45],['Não há rotina de backup',0]],
+ f:{sev:2, prob:2, title:'Continuidade digital em risco', base:'LGPD, art. 46 (medidas de segurança); continuidade de negócio',
+    desc:'Ransomware ou perda de servidor sem backup testado pode apagar o histórico da empresa — financeiro, clientes, fiscal. Restaurar é o teste; ter o arquivo não basta.',
+    sol:'Backup 3-2-1 (3 cópias, 2 mídias, 1 externa) com teste trimestral de restauração e gestor de senhas.', prazo:30, exp:['rev',1,4]}},
+
+{id:'g07', p:7, w:1,
+ t:'Existe um calendário consolidado de obrigações (fiscais, trabalhistas, licenças, renovações)?',
+ h:'Reúne todos os prazos fiscais, trabalhistas e de licenças num só lugar, para não perder nenhum por esquecimento.',
+ opts:[['Sim, calendário único com responsáveis',100],['Cada área controla o seu, sem consolidação',45],['Não existe — dependemos da memória',0]],
+ f:{sev:1, prob:3, title:'Obrigações sem calendário consolidado', base:'Compliance — gestão de obrigações',
+    desc:'Multa por atraso de obrigação acessória é o passivo mais evitável que existe — e o mais recorrente.',
+    sol:'Calendário único de compliance (fiscal + trabalhista + licenças) com dono e alertas.', prazo:30, exp:['rev',0.3,1]}},
+
+{id:'g08', p:7, w:1,
+ t:'A empresa conta com aconselhamento externo estruturado (conselho consultivo, mentoria, consultoria periódica)?',
+ h:'Um olhar de fora (conselheiro, mentor, consultor) ajuda a enxergar riscos e oportunidades que a rotina interna não vê.',
+ opts:[['Sim, apoio externo recorrente',100],['Pontualmente, quando há problema',50],['Não, decidimos internamente',20]],
+ f:{sev:1, prob:2, title:'Decisão estratégica sem contrapeso externo', base:'Governança — conselho consultivo',
+    desc:'Empresas que só olham para dentro repetem os próprios erros. Um contrapeso externo qualificado antecipa riscos que a rotina esconde.',
+    sol:'Rito trimestral com conselheiro/consultor externo e pauta estratégica fixa.', prazo:90, exp:['rev',0.5,2]}}
+];
+/* níveis de maturidade */
+const MATURITY = [
+  {min:0,  max:34, name:'Crítico',        desc:'A empresa opera com exposições capazes de comprometer sua continuidade. Há riscos que podem se materializar a qualquer momento — a prioridade é contenção imediata.'},
+  {min:35, max:54, name:'Vulnerável',     desc:'A operação funciona, mas sobre bases frágeis. Parte relevante do lucro está desprotegida e eventos comuns (fiscalização, ação trabalhista, saída de sócio) teriam impacto desproporcional.'},
+  {min:55, max:69, name:'Em Estruturação',desc:'Há fundamentos construídos, com lacunas específicas e identificáveis. Com um plano dirigido, a empresa alcança um novo patamar de segurança em poucos meses.'},
+  {min:70, max:84, name:'Estruturada',    desc:'A empresa está acima da média do mercado. Os riscos remanescentes são pontuais — o foco passa a ser otimização, oportunidades e perpetuação.'},
+  {min:85, max:100,name:'Blindada',       desc:'Estrutura de referência. O desafio agora é manter a disciplina de revisão periódica e capturar as oportunidades que a estrutura permite.'}
+];
+const SEV_NAMES = {4:'Crítico',3:'Alto',2:'Médio',1:'Baixo'};
+const money = v => {
+  if(v>=1000000) return 'R$ '+(v/1000000).toLocaleString('pt-BR',{maximumFractionDigits:1})+' mi';
+  const mil = Math.round(v/1000);
+  return mil>0 ? 'R$ '+mil.toLocaleString('pt-BR')+' mil' : (v>0 ? 'menos de R$ 1 mil' : 'R$ 0');
+};
+/* escapa dados digitados pelo usuário antes de injetar em innerHTML (nome, empresa, e-mail, etc. entram
+   no relatório e no painel do consultor via JSON colado — sem isso, um campo de perfil malicioso executaria
+   HTML/JS no navegador de quem visualiza o relatório) */
+const esc = v => String(v??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ================================================================
+   MOTOR DA APLICAÇÃO
+   ================================================================ */
+const DOM_APP = (() => {
+  const LS = 'dom_diag_v7';
+  let state = {profile:{}, answers:{}, pillarIdx:0, screen:'cover'};
+  let activePillars = [], activeQs = {};
+
+  const $ = s => document.querySelector(s);
+  const load = () => { try{ const s = JSON.parse(localStorage.getItem(LS)); if(s) state = s; }catch(e){} };
+  const save = () => { try{ localStorage.setItem(LS, JSON.stringify(state)); }catch(e){} };
+
+  /* ---------- perguntas visíveis conforme perfil ---------- */
+  function computeActive(){
+    activeQs = {}; activePillars = [];
+    PILLARS.forEach(pl => {
+      const qs = QUESTIONS.filter(q => q.p===pl.id && (!q.showIf || q.showIf(state.profile)));
+      if(qs.length){ activeQs[pl.id]=qs; activePillars.push(pl); }
+    });
+  }
+
+  /* ---------- navegação de telas ---------- */
+  function show(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    $('#'+id).classList.add('active');
+    window.scrollTo({top:0});
+    $('#toolbar').classList.toggle('show', id==='sReport');
+    $('#progressMeta').style.display = (id==='sAssess') ? 'block' : 'none';
+  }
+
+  /* ---------- perfil ---------- */
+  function renderProfile(){
+    const c = $('#profileForm'); c.innerHTML='';
+    PROFILE_FIELDS.forEach(f=>{
+      const div=document.createElement('div'); if(f.full) div.className='full';
+      const isChips = f.type==='chips';
+      let inner=`<label class="f-label" id="lbl_${f.id}"${isChips?'':` for="pf_${f.id}"`}>${f.label}${f.req?' *':''}</label>`;
+      if(f.type==='select'){
+        inner+=`<select id="pf_${f.id}" aria-labelledby="lbl_${f.id}"><option value="">Selecione…</option>${f.opts.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('')}</select>`;
+      }else if(isChips){
+        inner+=`<div class="choice-row" id="pf_${f.id}" role="radiogroup" aria-labelledby="lbl_${f.id}">${f.opts.map(o=>`<span class="chip" data-v="${o[0]}" role="radio" tabindex="0" aria-checked="false">${o[1]}</span>`).join('')}</div>`;
+      }else{
+        inner+=`<input type="${f.type}" id="pf_${f.id}" autocomplete="off">`;
+      }
+      div.innerHTML=inner; c.appendChild(div);
+      if(isChips){
+        const selectChip = ch=>{
+          div.querySelectorAll('.chip').forEach(x=>{x.classList.remove('sel'); x.setAttribute('aria-checked','false');});
+          ch.classList.add('sel'); ch.setAttribute('aria-checked','true');
+        };
+        div.querySelectorAll('.chip').forEach(ch=>{
+          ch.onclick=()=>selectChip(ch);
+          ch.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); selectChip(ch); } };
+        });
+      }
+      /* restaurar */
+      const v = state.profile[f.id];
+      if(v!==undefined){
+        if(isChips){ const ch=div.querySelector(`.chip[data-v="${v}"]`); if(ch){ ch.classList.add('sel'); ch.setAttribute('aria-checked','true'); } }
+        else $('#pf_'+f.id).value=v;
+      }
+    });
+  }
+
+  function submitProfile(){
+    let ok=true; const p={};
+    document.querySelectorAll('.f-invalid').forEach(el=>el.classList.remove('f-invalid'));
+    PROFILE_FIELDS.forEach(f=>{
+      let v;
+      if(f.type==='chips'){ const sel=$(`#pf_${f.id} .chip.sel`); v = sel? sel.dataset.v : ''; }
+      else v = $('#pf_'+f.id).value.trim();
+      p[f.id]=v;
+      let invalid = f.req && !v;
+      if(!invalid && f.type==='email' && v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) invalid=true;
+      if(!invalid && f.type==='tel' && v && v.replace(/\D/g,'').length<10) invalid=true;
+      if(invalid){ ok=false; $('#pf_'+f.id).classList.add('f-invalid'); }
+    });
+    $('#profileErr').style.display = ok?'none':'block';
+    if(!ok) return;
+    state.profile=p; state.pillarIdx=0; save();
+    computeActive(); renderPillar(); show('sAssess'); updateProgress();
+  }
+
+  /* ---------- assessment ---------- */
+  function renderPillar(){
+    const pl = activePillars[state.pillarIdx];
+    const qs = activeQs[pl.id];
+    const done = state.pillarIdx, total = activePillars.length;
+    let html = `
+      <div class="p-dots">${activePillars.map((p,i)=>`<span class="p-dot ${i<done?'done':''} ${i===done?'cur':''}"></span>`).join('')}</div>
+      <div class="pillar-head">
+        <div class="pillar-num">0${pl.id}</div>
+        <div><div class="pillar-name">${pl.name}</div></div>
+      </div>
+      <p class="pillar-sub">${pl.sub}</p>`;
+    qs.forEach((q,qi)=>{
+      html += `<div class="q-card" id="qc_${q.id}">
+        <div class="q-num">Pergunta ${qi+1} de ${qs.length}</div>
+        <div class="q-text" id="qt_${q.id}">${q.t}</div>
+        ${q.h?`<div class="q-help">${q.h}</div>`:''}
+        <div class="q-opts" role="radiogroup" aria-labelledby="qt_${q.id}">${q.opts.map((o,oi)=>`<div class="q-opt ${state.answers[q.id]===oi?'sel':''}" data-q="${q.id}" data-o="${oi}" role="radio" tabindex="0" aria-checked="${state.answers[q.id]===oi}">${o[0]}</div>`).join('')}</div>
+      </div>`;
+    });
+    $('#assessBody').innerHTML = html;
+    const selectOpt = el=>{
+      const qid=el.dataset.q;
+      document.querySelectorAll(`.q-opt[data-q="${qid}"]`).forEach(x=>{x.classList.remove('sel'); x.setAttribute('aria-checked','false');});
+      el.classList.add('sel'); el.setAttribute('aria-checked','true');
+      state.answers[qid]=+el.dataset.o; save(); updateProgress();
+    };
+    document.querySelectorAll('.q-opt').forEach(el=>{
+      el.onclick=()=>selectOpt(el);
+      el.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); selectOpt(el); } };
+    });
+    $('#btnPrev').style.visibility = state.pillarIdx===0?'hidden':'visible';
+    $('#btnNext').textContent = state.pillarIdx===total-1 ? 'Gerar o relatório' : 'Próximo pilar';
+    updateProgress();
+  }
+
+  function pillarComplete(){
+    const pl=activePillars[state.pillarIdx];
+    return activeQs[pl.id].every(q=>state.answers[q.id]!==undefined);
+  }
+
+  function nextPillar(){
+    if(!pillarComplete()){
+      const pl=activePillars[state.pillarIdx];
+      const missing = activeQs[pl.id].find(q=>state.answers[q.id]===undefined);
+      const el=$('#qc_'+missing.id);
+      el.scrollIntoView({behavior:'smooth',block:'center'});
+      el.style.borderLeftColor='var(--crit)';
+      setTimeout(()=>el.style.borderLeftColor='var(--gold)',1800);
+      return;
+    }
+    if(state.pillarIdx < activePillars.length-1){
+      state.pillarIdx++; save(); renderPillar(); window.scrollTo({top:0});
+    } else { buildReport(); }
+  }
+  function prevPillar(){ if(state.pillarIdx>0){ state.pillarIdx--; save(); renderPillar(); window.scrollTo({top:0}); } }
+
+  function updateProgress(){
+    const totalQ = activePillars.reduce((a,p)=>a+activeQs[p.id].length,0)||1;
+    const ansQ = activePillars.reduce((a,p)=>a+activeQs[p.id].filter(q=>state.answers[q.id]!==undefined).length,0);
+    $('#progressBar').style.width = Math.round(ansQ/totalQ*100)+'%';
+    $('#progressMeta').textContent = `${ansQ} / ${totalQ}`;
+  }
+
+  /* ---------- cálculo ---------- */
+  function computeResults(){
+    const P = state.profile;
+    const rev = REV_MID[P.fat]||750000, emp = EMP_MID[P.emp]||0;
+    const pillarScores = {}; const findings=[]; const opps=[];
+    activePillars.forEach(pl=>{
+      let sw=0, tw=0;
+      activeQs[pl.id].forEach(q=>{
+        const oi = state.answers[q.id]; if(oi===undefined) return;
+        const score = q.opts[oi][1];
+        sw += score*q.w; tw += 100*q.w;
+        if(q.f && score<=50){
+          const [t,a,b]=q.f.exp;
+          let lo,hi;
+          if(t==='emp'){ lo=a*Math.max(emp,1); hi=b*Math.max(emp,1); }
+          else if(t==='rev'){ lo=rev*a/100; hi=rev*b/100; }
+          else { lo=a; hi=b; }
+          findings.push({...q.f, pid:pl.id, qid:q.id, score, expLo:lo, expHi:hi});
+        }
+        const opp = q.opp || (q.f && q.f.opp);
+        if(opp && score<=50){
+          const lo=rev*opp.pct[0]/100, hi=rev*opp.pct[1]/100;
+          opps.push({...opp, lo, hi});
+        }
+      });
+      pillarScores[pl.id] = tw? Math.round(sw/tw*100) : 100;
+    });
+    const wSum = activePillars.reduce((a,p)=>a+p.weight,0);
+    const dom = Math.round(activePillars.reduce((a,p)=>a+pillarScores[p.id]*p.weight,0)/wSum);
+    const level = MATURITY.find(m=>dom>=m.min&&dom<=m.max);
+    findings.sort((a,b)=>(b.sev*b.prob)-(a.sev*a.prob));
+    const expLo = findings.reduce((a,f)=>a+f.expLo,0), expHi = findings.reduce((a,f)=>a+f.expHi,0);
+    const oppLo = opps.reduce((a,o)=>a+o.lo,0), oppHi = opps.reduce((a,o)=>a+o.hi,0);
+    return {dom, level, pillarScores, findings, opps, expLo, expHi, oppLo, oppHi, rev, emp};
+  }
+
+  /* ---------- envio ---------- */
+  /* texto organizado com perfil + todas as perguntas e respostas por pilar — usado no webhook,
+     no e-mail de apoio e para reimportar o diagnóstico no painel do consultor */
+  function readableText(R){
+    const P = state.profile;
+    const L = [];
+    L.push('DIAGNÓSTICO DOM — '+(P.empresa||''));
+    L.push('Respondente: '+(P.nome||'')+' · '+(P.email||'')+' · '+(P.fone||''));
+    L.push('Cidade: '+(P.cidade||'—')+' | Setor: '+(P.setor||'')+' | Regime: '+(P.regime||'')+' | Faturamento: '+(P.fat||'')+' | Funcionários: '+(P.emp||'')+' | Sócios: '+(P.socios||''));
+    L.push('');
+    L.push('SCORE DOM: '+R.dom+' — '+R.level.name);
+    L.push('Achados: '+R.findings.length+' | Exposição estimada: '+money(R.expLo)+' a '+money(R.expHi));
+    if(R.opps.length) L.push('Oportunidades de recuperação: '+money(R.oppLo)+' a '+money(R.oppHi));
+    L.push('');
+    activePillars.forEach(pl=>{
+      L.push('--- '+pl.name.toUpperCase()+' ('+R.pillarScores[pl.id]+'/100) ---');
+      activeQs[pl.id].forEach(q=>{
+        const oi = state.answers[q.id]; if(oi===undefined) return;
+        L.push('P: '+q.t);
+        L.push('R: '+q.opts[oi][0]);
+      });
+      L.push('');
+    });
+    return L.join('\n');
+  }
+  function payload(){
+    const R = computeResults();
+    return {ts:new Date().toISOString(), profile:state.profile, answers:state.answers,
+            results:{dom:R.dom, level:R.level.name, pillars:R.pillarScores, findings:R.findings.length,
+                      expLo:R.expLo, expHi:R.expHi, oppLo:R.oppLo, oppHi:R.oppHi},
+            leituraCompleta: readableText(R),
+            jsonCompleto: JSON.stringify({profile:state.profile, answers:state.answers})};
+  }
+  async function sendData(){
+    const btn=$('#btnSend'); const data=payload();
+    if(CONFIG.webhookUrl){
+      btn.textContent='Enviando…';
+      try{
+        /* text/plain evita o preflight de CORS; mode:no-cors evita que o navegador tente (e falhe) ler a
+           resposta do Apps Script, que chega via redirect sem cabeçalho CORS — o doPost já rodou mesmo assim */
+        await fetch(CONFIG.webhookUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(data)});
+        btn.textContent='✓ Diagnóstico enviado'; btn.disabled=true; return;
+      }catch(e){ btn.textContent='Enviar diagnóstico ao consultor'; }
+    }
+    /* sem webhook configurado (ou falha no envio): corpo do e-mail curto — nunca a resposta completa,
+       que é o que quebrava o link mailto (URL longa demais vira um erro de "linha de comando" no navegador) */
+    try{ await navigator.clipboard.writeText(data.leituraCompleta); }catch(e){}
+    const resumo = 'Diagnóstico DOM — '+state.profile.empresa+'\n'
+      +'Respondente: '+state.profile.nome+' ('+state.profile.email+' / '+state.profile.fone+')\n'
+      +'Score: '+data.results.dom+' — '+data.results.level+'\n\n'
+      +'As respostas completas foram copiadas para a área de transferência — cole aqui no corpo do e-mail (Ctrl+V ou Cmd+V).';
+    const body = encodeURIComponent(resumo);
+    window.location.href = `mailto:${CONFIG.consultantEmail}?subject=${encodeURIComponent('Diagnóstico DOM — '+state.profile.empresa)}&body=${body}`;
+    btn.textContent='✓ Preparado para envio';
+  }
+
+  function reset(){
+    if(!confirm('Isso apaga as respostas deste diagnóstico. Continuar?')) return;
+    localStorage.removeItem(LS);
+    state={profile:{},answers:{},pillarIdx:0,screen:'cover'};
+    renderProfile(); show('sCover'); $('#progressBar').style.width='0%';
+  }
+
+  /* ---------- init ---------- */
+  function start(){ renderProfile(); show('sProfile'); }
+  function init(){
+    load(); renderProfile();
+    if(Object.keys(state.profile).length && Object.keys(state.answers).length){
+      computeActive();
+      const totalQ = activePillars.reduce((a,p)=>a+activeQs[p.id].length,0);
+      const ansQ = activePillars.reduce((a,p)=>a+activeQs[p.id].filter(q=>state.answers[q.id]!==undefined).length,0);
+      if(ansQ>=totalQ && totalQ>0){ buildReport(); return; }
+      if(ansQ>0){ renderPillar(); show('sAssess'); return; }
+    }
+    if(isConsultor()){ show('sConsultorImport'); return; }
+    show('sCover');
+  }
+
+  /* ---------- painel do consultor: importar diagnóstico de outro dispositivo ---------- */
+  function showConsultorImport(){ show('sConsultorImport'); }
+  function importDiagnostico(){
+    const ta = $('#importJson'), err = $('#importErr');
+    try{
+      const parsed = JSON.parse(ta.value.trim());
+      const prof = parsed.profile;
+      const ans = parsed.answers || (parsed.jsonCompleto ? JSON.parse(parsed.jsonCompleto).answers : null);
+      if(!prof || !ans || !Object.keys(prof).length || !Object.keys(ans).length) throw new Error('formato inesperado');
+      state = {profile:prof, answers:ans, pillarIdx:0, screen:'report'};
+      err.style.display='none';
+      computeActive();
+      buildReport();
+    }catch(e){
+      err.style.display='block';
+    }
+  }
+
+  /* ================================================================
+     RELATÓRIO
+     ================================================================ */
+  const isConsultor = () => new URLSearchParams(location.search).get('modo')==='consultor';
+
+  function buildReport(){
+    computeActive();
+    const R = computeResults();
+    const P = state.profile;
+    const dt = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+    const crit = R.findings.filter(f=>f.sev===4).length;
+    const altos = R.findings.filter(f=>f.sev===3).length;
+    let sn = 0; const secNum = () => String(++sn).padStart(2,'0');
+
+    /* --- capa do relatório --- */
+    let html = `
+    <div class="rep-cover">
+      <div class="rep-brand">
+        <div class="rep-logo">${CONFIG.logoUrl?`<img src="${CONFIG.logoUrl}" alt="DOM">`:'DOM'}</div>
+        <div class="rep-date">Diagnóstico 360°<br>${dt}</div>
+      </div>
+      <div class="rep-kicker">Dossiê Empresarial · Passivo Invisível</div>
+      <h1 class="rep-title">Relatório de Diagnóstico Estratégico</h1>
+      <div class="rep-company">${esc(P.empresa)} — ${esc(P.cidade||'')}</div>
+      <div class="kpi-band">
+        <div class="kpi"><div class="v">${R.dom}</div><div class="k">DOM Score (0–100)</div></div>
+        <div class="kpi"><div class="v">${R.findings.length}</div><div class="k">Riscos identificados</div></div>
+        <div class="kpi"><div class="v">${crit+altos}</div><div class="k">Críticos e altos</div></div>
+        <div class="kpi"><div class="v">${R.opps.length?money(R.oppLo)+'+':'—'}</div><div class="k">Oportunidades mapeadas</div></div>
+      </div>
+    </div>`;
+
+    /* --- 1. score e maturidade --- */
+    html += `
+    <div class="rep-sec">
+      <div class="rep-sec-head"><span class="rep-sec-num">${secNum()}</span><h2 class="rep-sec-title">Nível de maturidade estrutural</h2></div>
+      <div class="score-flex">
+        <div class="gauge-wrap">
+          <svg viewBox="0 0 280 150" width="280" height="150">
+            <path d="M 20 140 A 120 120 0 0 1 260 140" fill="none" stroke="rgba(184,149,73,.18)" stroke-width="3"/>
+            <path id="gaugeArc" d="M 20 140 A 120 120 0 0 1 260 140" fill="none" stroke="var(--gold)" stroke-width="3"
+              stroke-dasharray="377" stroke-dashoffset="${377-(377*R.dom/100)}"/>
+            ${[0,25,50,75,100].map(v=>{const a=Math.PI*(1-v/100);const x1=140+112*Math.cos(a),y1=140-112*Math.sin(a),x2=140+122*Math.cos(a),y2=140-122*Math.sin(a);
+              return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--gold)" stroke-opacity=".5" stroke-width="1"/>`;}).join('')}
+          </svg>
+          <div class="gauge-val">${R.dom}</div>
+          <div class="gauge-lbl">${R.level.name}</div>
+        </div>
+        <div class="mat-scale">
+          ${MATURITY.map(m=>`<div class="mat-row ${m===R.level?'cur':''}">
+            <span class="rng">${m.min}–${m.max}</span><span class="nm">${m.name}</span><span class="marker">◆ sua empresa</span>
+          </div>`).join('')}
+        </div>
+      </div>
+      <div class="verdict"><p><b>${esc(P.empresa)}</b> alcançou <b>${R.dom} pontos</b> — nível <b>${R.level.name}</b>. ${R.level.desc}</p></div>
+    </div>`;
+
+    /* --- 2. radar por pilar --- */
+    html += `
+    <div class="rep-sec">
+      <div class="rep-sec-head"><span class="rep-sec-num">${secNum()}</span><h2 class="rep-sec-title">Leitura por pilar</h2></div>
+      <div class="radar-flex">
+        <canvas id="radar" width="440" height="400"></canvas>
+        <div class="pillar-bars">
+          ${activePillars.map(pl=>`<div class="pb-row">
+            <div class="pb-top"><span>0${pl.id} · ${pl.name}</span><span class="pv">${R.pillarScores[pl.id]}</span></div>
+            <div class="pb-track"><div class="pb-fill" data-w="${R.pillarScores[pl.id]}"></div></div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+
+    /* --- 3. mapa de riscos --- */
+    if(R.findings.length){
+      html += `
+      <div class="rep-sec">
+        <div class="rep-sec-head"><span class="rep-sec-num">${secNum()}</span><h2 class="rep-sec-title">Mapa de riscos — probabilidade × impacto</h2></div>
+        <div class="riskmap">
+          <div class="rm-ylab">Impacto →</div>
+          <div class="rm-grid" id="rmGrid">
+            ${Array.from({length:25},(_,i)=>`<div class="rm-cell" data-i="${i}"></div>`).join('')}
+          </div>
+          <div></div>
+          <div class="rm-xlab">Probabilidade →</div>
+        </div>
+        <div class="rm-legend">
+          <span class="rm-leg"><i style="background:var(--crit)"></i>Crítico</span>
+          <span class="rm-leg"><i style="background:var(--alto)"></i>Alto</span>
+          <span class="rm-leg"><i style="background:var(--medio)"></i>Médio</span>
+          <span class="rm-leg"><i style="background:var(--baixo)"></i>Baixo</span>
+        </div>
+      </div>`;
+    }
+
+    /* --- 4. exposição estimada --- */
+    if(R.findings.length){
+      html += `
+      <div class="rep-sec">
+        <div class="rep-sec-head"><span class="rep-sec-num">${secNum()}</span><h2 class="rep-sec-title">Exposição financeira estimada</h2></div>
+        <div class="kpi-band" style="margin-top:0">
+          <div class="kpi"><div class="v">${money(R.expLo)}</div><div class="k">Cenário conservador</div></div>
+          <div class="kpi"><div class="v">${money(R.expHi)}</div><div class="k">Cenário de materialização ampla</div></div>
+          <div class="kpi"><div class="v">${(R.expHi/R.rev*100).toFixed(0)}%</div><div class="k">Do faturamento anual em risco (teto)</div></div>
+          <div class="kpi"><div class="v">${crit}</div><div class="k">Riscos com potencial de paralisar a operação</div></div>
+        </div>
+        <div class="disclaimer">Faixas estimativas, calculadas a partir do porte informado e de parâmetros médios de mercado e jurisprudência. Não constituem apuração pericial — a quantificação precisa de cada item é feita na fase de aprofundamento.</div>
+      </div>`;
+    }
+
+    /* --- 5. dossiê de achados --- */
+    html += `
+    <div class="rep-sec">
+      <div class="rep-sec-head"><span class="rep-sec-num">${secNum()}</span><h2 class="rep-sec-title">Dossiê de achados — problema, fundamento e solução</h2></div>
+      ${R.findings.length? activePillars.map(pl=>{
+        const fs = R.findings.filter(f=>f.pid===pl.id);
+        if(!fs.length) return '';
+        return `<div class="find-pillar open">
+          <div class="find-pillar-head" role="button" tabindex="0" aria-expanded="true" onclick="this.setAttribute('aria-expanded', this.parentElement.classList.toggle('open'))" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+            <span class="fp-num">0${pl.id}</span><span class="fp-name">${pl.name}</span>
+            <span class="fp-meta"><span class="fp-count">${fs.length} achado${fs.length>1?'s':''}</span><span class="fp-score">${R.pillarScores[pl.id]}/100</span><span class="fp-chev">▶</span></span>
+          </div>
+          <div class="find-body">
+            ${fs.map(f=>`<div class="finding sev${f.sev}">
+              <div class="find-head"><span class="find-title">${f.title}</span><span class="sev-chip s${f.sev}">${SEV_NAMES[f.sev]}</span></div>
+              <div class="find-grid">
+                <div class="find-cell"><div class="lb">O problema</div><div class="tx">${f.desc}</div></div>
+                <div class="find-cell"><div class="lb">Fundamentação</div><div class="tx">${f.base}</div></div>
+                <div class="find-cell"><div class="lb">Exposição estimada</div><div class="tx"><b>${money(f.expLo)} – ${money(f.expHi)}</b></div></div>
+                <div class="find-cell"><div class="lb">Prazo recomendado</div><div class="tx"><b>${f.prazo} dias</b></div></div>
+                <div class="find-cell find-full"><div class="lb">Caminho da solução</div><div class="tx">${f.sol}</div></div>
+              </div>
+            </div>`).join('')}
+          </div>
+        </div>`;
+      }).join('') : '<p class="serif-i">Nenhum achado relevante — estrutura consistente nos pontos avaliados.</p>'}
+    </div>`;
+
+    /* --- 6. oportunidades --- */
+    if(R.opps.length){
+      html += `
+      <div class="rep-sec">
+        <div class="rep-sec-head"><span class="rep-sec-num">${secNum()}</span><h2 class="rep-sec-title">Dinheiro na mesa — oportunidades de recuperação</h2></div>
+        ${R.opps.map(o=>`<div class="opp">
+          <div class="opp-title">${o.title}</div>
+          <div class="opp-desc">${o.desc}</div>
+          <div class="opp-val">${money(o.lo)} – ${money(o.hi)}</div>
+          <div class="opp-note">Estimativa preliminar sobre o porte informado; valor exato depende de apuração documental (notas fiscais, EFDs e PGDAS do período).</div>
+        </div>`).join('')}
+      </div>`;
+    }
+
+    /* --- 7. plano 30/60/90 --- */
+    const by = d => R.findings.filter(f=>f.prazo===d);
+    html += `
+    <div class="rep-sec">
+      <div class="rep-sec-head"><span class="rep-sec-num">${secNum()}</span><h2 class="rep-sec-title">Plano de ação priorizado</h2></div>
+      <div class="plan-cols">
+        ${[
+          [30,'Contenção','Estancar o que sangra: riscos de materialização imediata.'],
+          [60,'Proteção','Fechar as portas de entrada de passivo novo.'],
+          [90,'Estruturação','Construir a arquitetura que perpetua o negócio.']
+        ].map(([d,nm,ph])=>`<div class="plan-col">
+          <h3>${d} dias — ${nm}</h3><div class="ph">${ph}</div>
+          ${by(d).length? by(d).map(f=>`<div class="plan-item"><b>${f.title}.</b> ${f.sol}</div>`).join('')
+            : '<div class="plan-item serif-i">Sem pendências nesta janela.</div>'}
+        </div>`).join('')}
+      </div>
+    </div>`;
+
+    /* --- 8. projeção de maturidade --- */
+    const proj = [R.dom, Math.min(R.dom+18,88), Math.min(R.dom+30,93), Math.min(R.dom+38,97)];
+    html += `
+    <div class="rep-sec">
+      <div class="rep-sec-head"><span class="rep-sec-num">${secNum()}</span><h2 class="rep-sec-title">Projeção de maturidade com o Método DOM</h2></div>
+      <div class="proj-grid">
+        ${['Hoje','Após 90 dias','Após 12 meses','Regime de manutenção'].map((y,i)=>`<div class="proj-cell">
+          <div class="y">${y}</div><div class="s">${proj[i]}</div>
+          <div class="d">${['Fotografia atual do diagnóstico.','Contenção e proteção executadas.','Estruturação completa dos pilares.','Revisão periódica e evolução contínua.'][i]}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+
+    /* --- consultor --- */
+    if(isConsultor()) html += consultorBlock(R);
+
+    /* --- metodologia + cta --- */
+    html += `
+    <div class="rep-sec">
+      <div class="rep-sec-head"><span class="rep-sec-num">${secNum()}</span><h2 class="rep-sec-title">Metodologia e alcance</h2></div>
+      <p class="meth">Este relatório foi gerado pelo <b>Método DOM — Diagnosticar, Organizar, Maturidade</b>, a partir das respostas declaradas pelo próprio gestor em ${activePillars.reduce((a,p)=>a+activeQs[p.id].length,0)} verificações distribuídas em ${activePillars.length} pilares, calibradas para o porte, o regime tributário e o setor informados. A fundamentação normativa referencia a legislação vigente — incluindo a nova NR-1 (riscos psicossociais, fiscalização desde maio/2026), a LC 214/2025 (reforma tributária) e a LC 227/2026 (novo ITCMD).</p>
+      <div class="disclaimer">Este diagnóstico tem natureza orientativa e não substitui parecer jurídico, auditoria contábil ou apuração pericial sobre documentos. As estimativas financeiras são faixas de referência. Validade da fotografia: ${CONFIG.reportValidity}. Dados tratados nos termos da LGPD, exclusivamente para a elaboração deste diagnóstico e contato subsequente.</div>
+    </div>
+    <div class="cta-band no-print-keep">
+      <div class="eyebrow" style="margin-bottom:14px">O próximo passo</div>
+      <h2>O diagnóstico mostrou o mapa.<br>A execução constrói a blindagem.</h2>
+      <p>Cada achado deste dossiê tem um caminho de solução. Sua equipe pode executá-lo — ou podemos conduzir a reestruturação completa com o acompanhamento do Método DOM.</p>
+      <div class="cta-row">
+        <a class="btn btn-solid" target="_blank" href="https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent('Concluí o Diagnóstico DOM ('+P.empresa+', score '+R.dom+' — '+R.level.name+') e quero conversar sobre o plano de ação.')}">Agendar reunião de devolutiva</a>
+        <button class="btn no-print" onclick="window.print()">Baixar o dossiê em PDF</button>
+      </div>
+    </div>
+    <div class="rep-footer">
+      <span class="f1">MÉTODO DOM</span>
+      <span class="f2">“CPFs passam. CNPJs, se bem estruturados, se perpetuam.” — ${CONFIG.consultantName}</span>
+    </div>`;
+
+    $('#reportBody').innerHTML = html;
+    show('sReport');
+    requestAnimationFrame(()=>{ drawRadar(R); placeRiskDots(R); animateBars(); if(isConsultor()) updateConsPackage(); });
+    /* auto-captura do lead assim que o relatório fica pronto, uma única vez — sem a trava state.sent, reabrir
+       a aba (F5) ou o consultor reconstruir o diagnóstico no painel de importação reenviava o mesmo lead
+       ao webhook a cada renderização, duplicando linhas na planilha */
+    if(CONFIG.webhookUrl && !state.sent && !isConsultor()){
+      state.sent = true; save();
+      try{ fetch(CONFIG.webhookUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload())}); }catch(e){}
+    }
+  }
+
+  /* ---------- bloco do consultor ---------- */
+  /* faixa-base de honorários por pilar (porte médio, fator 1×) — ajustada por porte e por gravidade dos achados */
+  const PILLAR_BASE = {
+    1:{lo:3000,hi:9000},  2:{lo:3500,hi:10000}, 3:{lo:2500,hi:8000}, 4:{lo:2000,hi:6000},
+    5:{lo:1500,hi:5000},  6:{lo:2000,hi:6000},  7:{lo:1500,hi:4500}
+  };
+  function pillarSuggested(pl, R, fFac){
+    const fs = R.findings.filter(f=>f.pid===pl.id);
+    const crit = fs.filter(f=>f.sev>=3).length;
+    const sevFac = fs.length ? 1 + Math.min(crit*0.15, 0.6) : 0.6; /* mais achados graves = mais escopo; sem achados = pacote enxuto */
+    const base = PILLAR_BASE[pl.id];
+    const mid = (base.lo+base.hi)/2 * fFac * sevFac;
+    return Math.max(500, Math.round(mid/500)*500);
+  }
+  function updateConsPackage(){
+    let total=0;
+    document.querySelectorAll('.cons-price-input').forEach(i=>{ total += (+i.value||0); });
+    const el=$('#consPackageTotal'); if(el) el.textContent = money(total);
+  }
+  function consultorBlock(R){
+    const P=state.profile;
+    const fFac = {a:1, b:1.25, c:1.8, d:2.6, e:3.4}[P.fat]||1.5;
+    const rng = (lo,hi)=> money(Math.round(lo*fFac/500)*500)+' – '+money(Math.round(hi*fFac/500)*500);
+    const quick = R.findings.filter(f=>f.prazo===30).slice(0,5);
+    const big = R.findings.filter(f=>f.sev>=3);
+    return `
+    <div class="cons-band">
+      <div class="cons-head"><span class="tag">Versão do consultor</span><h2>Leitura comercial — não incluída na versão do cliente</h2>
+        <button class="btn btn-ghost no-print" style="margin-left:auto" onclick="DOM_APP.showConsultorImport()">Carregar outro diagnóstico</button>
+      </div>
+      <div class="cons-body">
+        <div class="cons-sub">Contato do lead</div>
+        <table class="cons-tbl"><tr><td><b>${esc(P.nome)}</b> · ${esc(P.empresa)}</td><td>${esc(P.email)}</td><td>${esc(P.fone)}</td><td>${esc(P.cidade||'—')}</td></tr></table>
+
+        <div class="cons-sub">Tese de venda</div>
+        <p style="color:var(--paper-dim);font-size:15px">Score ${R.dom} (${R.level.name}) · ${big.length} riscos altos/críticos · exposição mapeada de ${money(R.expLo)} a ${money(R.expHi)}${R.opps.length?` · oportunidades de recuperação de ${money(R.oppLo)} a ${money(R.oppHi)} — a consultoria pode se pagar sozinha`:''}. Âncora da reunião: <b>o custo de não agir supera o investimento na estruturação.</b></p>
+
+        <div class="cons-sub">Ganchos de abertura (quick wins de 30 dias)</div>
+        <table class="cons-tbl">
+          <tr><th>Achado</th><th>Argumento na reunião</th></tr>
+          ${quick.map(f=>`<tr><td><b>${f.title}</b></td><td>${f.desc}</td></tr>`).join('')||'<tr><td colspan="2">Sem quick wins de 30 dias — conduzir pela visão estrutural.</td></tr>'}
+        </table>
+
+        <div class="cons-sub">Honorários sugeridos — Fases 1 e 3 (fator de porte ${fFac}×)</div>
+        <table class="cons-tbl">
+          <tr><th>Fase</th><th>Escopo</th><th>Honorários sugeridos</th></tr>
+          <tr><td><b>1 · Diagnóstico aprofundado</b></td><td>Auditoria documental dos achados deste relatório, quantificação pericial da exposição e das recuperações</td><td><b>${rng(3000,10000)}</b></td></tr>
+          <tr><td><b>3 · Acompanhamento mensal</b></td><td>Reunião estratégica mensal, revisão contínua de riscos, suporte à decisão</td><td><b>${rng(1500,5000)}/mês</b></td></tr>
+        </table>
+
+        <div class="cons-sub">2 · Reestruturação — precificação por pilar (ajustável)</div>
+        <p style="color:var(--paper-dim);font-size:13.5px;font-style:italic;margin-bottom:6px">Valor sugerido automaticamente pelo porte do cliente e pela gravidade dos achados de cada pilar. Ajuste os campos antes de enviar a proposta — o total do pacote soma ao vivo.</p>
+        <table class="cons-tbl">
+          <tr><th>Pilar</th><th>Achados</th><th>Valor do pacote</th></tr>
+          ${activePillars.map(pl=>{
+            const fs = R.findings.filter(f=>f.pid===pl.id);
+            const sugg = pillarSuggested(pl, R, fFac);
+            return `<tr><td><b>0${pl.id} · ${pl.name}</b></td>
+              <td>${fs.length} achado${fs.length!==1?'s':''} · score ${R.pillarScores[pl.id]}/100</td>
+              <td><input type="number" class="cons-price-input" data-pilar="${pl.id}" value="${sugg}" step="500" min="0" oninput="DOM_APP.updateConsPackage()"></td>
+            </tr>`;
+          }).join('')}
+          <tr><td colspan="2" style="text-align:right"><b>Total do pacote de reestruturação</b></td><td><b id="consPackageTotal" style="color:var(--gold);font-family:var(--disp);font-size:17px">—</b></td></tr>
+        </table>
+
+        <div class="cons-sub">Roteiro da devolutiva (40 min)</div>
+        <table class="cons-tbl">
+          <tr><td><b>1. Score e maturidade</b> (5 min)</td><td>Mostrar o mostrador e a régua — deixar o número falar.</td></tr>
+          <tr><td><b>2. Os 3 achados mais graves</b> (15 min)</td><td>Problema → fundamento legal → exposição em R$. Sem juridiquês.</td></tr>
+          <tr><td><b>3. Dinheiro na mesa</b> (10 min)</td><td>Apresentar recuperações: transforma custo em investimento com retorno.</td></tr>
+          <tr><td><b>4. Plano e proposta</b> (10 min)</td><td>Plano 30/60/90 na tela → fases 1–2–3 como passo natural, com o total do pacote já calculado. Fechar agenda, não "enviar proposta".</td></tr>
+        </table>
+      </div>
+    </div>`;
+  }
+
+  /* ---------- gráficos ---------- */
+  function drawRadar(R){
+    const cv = $('#radar'); if(!cv) return;
+    let ctx; try{ ctx = cv.getContext('2d'); }catch(e){ return; }
+    if(!ctx) return;
+    const W=cv.width, H=cv.height, cx=W/2, cy=H/2+6, rad=Math.min(W,H)/2-58;
+    const n = activePillars.length;
+    const ang = i => -Math.PI/2 + i*2*Math.PI/n;
+    ctx.clearRect(0,0,W,H);
+    const printing = matchMedia('print').matches;
+    const grid='rgba(184,149,73,.28)', txt=printing?'#4a463c':'rgba(245,241,232,.7)';
+    /* grade */
+    for(let ring=1; ring<=4; ring++){
+      ctx.beginPath();
+      for(let i=0;i<=n;i++){ const a=ang(i%n), r=rad*ring/4;
+        i?ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a)):ctx.moveTo(cx+r*Math.cos(a),cy+r*Math.sin(a)); }
+      ctx.strokeStyle=grid; ctx.lineWidth=1; ctx.stroke();
+    }
+    for(let i=0;i<n;i++){ const a=ang(i);
+      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+rad*Math.cos(a),cy+rad*Math.sin(a));
+      ctx.strokeStyle=grid; ctx.stroke();
+    }
+    /* polígono */
+    ctx.beginPath();
+    activePillars.forEach((pl,i)=>{ const a=ang(i), r=rad*R.pillarScores[pl.id]/100;
+      i?ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a)):ctx.moveTo(cx+r*Math.cos(a),cy+r*Math.sin(a)); });
+    ctx.closePath();
+    ctx.fillStyle='rgba(184,149,73,.22)'; ctx.fill();
+    ctx.strokeStyle='#B89549'; ctx.lineWidth=1.5; ctx.stroke();
+    activePillars.forEach((pl,i)=>{ const a=ang(i), r=rad*R.pillarScores[pl.id]/100;
+      ctx.beginPath(); ctx.arc(cx+r*Math.cos(a),cy+r*Math.sin(a),3,0,7); ctx.fillStyle='#B89549'; ctx.fill(); });
+    /* rótulos */
+    ctx.font='11px Marcellus, serif'; ctx.fillStyle=txt; ctx.textAlign='center';
+    activePillars.forEach((pl,i)=>{ const a=ang(i), r=rad+26;
+      const x=cx+r*Math.cos(a), y=cy+r*Math.sin(a);
+      ctx.fillText('0'+pl.id, x, y+4);
+    });
+  }
+
+  function placeRiskDots(R){
+    const grid=$('#rmGrid'); if(!grid) return;
+    /* agrupa por célula para espalhar pontos */
+    const groups={};
+    R.findings.forEach(f=>{
+      const imp = f.sev===4?5 : f.sev===3?4 : f.sev===2?3 : 2;   /* impacto 1–5 */
+      const key = imp+'_'+f.prob;
+      (groups[key]=groups[key]||[]).push(f);
+    });
+    Object.entries(groups).forEach(([key,fs])=>{
+      const [imp,prob]=key.split('_').map(Number);
+      const row = 5-imp, col = prob-1;             /* linha 0 = impacto 5 */
+      const cell = grid.children[row*5+col]; if(!cell) return;
+      fs.forEach((f,i)=>{
+        const d=document.createElement('span');
+        d.className='rm-dot sev'+f.sev;
+        const off = 14 + (i%3)*24, offY = 12 + Math.floor(i/3)*20;
+        d.style.left=off+'%'; d.style.top=offY+'%';
+        d.innerHTML=`<span class="tip">${f.title}</span>`;
+        cell.appendChild(d);
+      });
+    });
+  }
+
+  function animateBars(){
+    document.querySelectorAll('.pb-fill').forEach(el=>{ requestAnimationFrame(()=>el.style.width=el.dataset.w+'%'); });
+  }
+
+  return {start, submitProfile, nextPillar, prevPillar, sendData, reset, init, buildReport,
+           importDiagnostico, showConsultorImport, updateConsPackage};
+})();
+document.addEventListener('DOMContentLoaded', DOM_APP.init);
+</script>
+</body>
+</html>
